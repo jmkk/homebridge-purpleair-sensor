@@ -1,15 +1,20 @@
 {
-  "pluginAlias": "AirQualityPurpleAir",
-  "pluginType": "platform",
-  "singular": true,
+  "pluginAlias": "PurpleAirSensor",
+  "pluginType": "accessory",
+  "singular": false,
+  "headerDisplay": "Find the sensor number by going to <a href='https://www.purpleair.com/map'>PurpleAir's map</a> -> click on a sensor -> 'Get This Widget' -> 'JSON' and look at the URL. It's the number right after 'show'.",
   "schema": {
     "type": "object",
     "properties": {
       "name": {
         "title": "Name",
         "type": "string",
-        "required": true,
-        "default": "Example Dynamic Platform"
+        "required": true
+      },
+      "sensor": {
+        "title": "Sensor Number",
+        "type": "number",
+        "required": true
       }
     }
   }
