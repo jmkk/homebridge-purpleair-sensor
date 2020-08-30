@@ -23,7 +23,11 @@
     "prepublishOnly": "npm run lint && npm run build"
   },
   "keywords": [
-    "homebridge-plugin"
+    "homebridge-plugin",
+    "homekit",
+    "homebridge",
+    "airquality",
+    "purpleair"
   ],
   "dependencies": {
     "axios": "0.19.2"
