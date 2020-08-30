@@ -1,22 +1,22 @@
 {
   "private": true,
-  "displayName": "Plugin Name",
-  "name": "homebridge-plugin-name",
+  "displayName": "Homebridge PurpleAir Sensor",
+  "name": "homebridge-purpleair-sensor",
   "version": "1.0.0",
-  "description": "A short description about what your plugin does.",
+  "description": "Monitor air quality using PurpleAir.",
   "license": "Apache-2.0",
   "repository": {
     "type": "git",
-    "url": "git://github.com/USERNAME/GITHUB_PROJECT_NAME.git"
+    "url": "git://github.com/rxin/homebridge-purpleair-sensor.git"
   },
   "bugs": {
-    "url": "https://github.com/USERNAME/GITHUB_PROJECT_NAME/issues"
+    "url": "https://github.com/rxin/homebridge-purpleair-sensor/issues"
   },
   "engines": {
     "node": ">=10.17.0",
     "homebridge": ">0.4.53"
   },
-  "main": "dist/index.js",
+  "main": "dist/accessory.js",
   "scripts": {
     "lint": "eslint src/**.ts",
     "watch": "npm run build && npm link && nodemon",
@@ -26,7 +26,9 @@
   "keywords": [
     "homebridge-plugin"
   ],
-  "dependencies": {},
+  "dependencies": {
+    "axios": "0.19.2"
+  },
   "devDependencies": {
     "@types/node": "^14.6.1",
     "@typescript-eslint/eslint-plugin": "^3.10.1",
