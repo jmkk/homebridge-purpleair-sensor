@@ -19,107 +19,130 @@ export = (api: API) => {
 };
 
 class PurpleAirSensor implements AccessoryPlugin {
-  
-    private readonly log: Logging;
-    private readonly name: string;
-    private readonly sensor: string;
-  
-    private readonly service: Service;
-    private readonly informationService: Service;
-  
-    constructor(log: Logging, config: AccessoryConfig, api: API) {
-      this.log = log;
-      this.sensor = config.sensor;
-      this.name = config.name;
-      this.service = new hap.Service.AirQualitySensor(this.name);
 
-      this.log('Initializing PurpleAirSensor', this.name, this.sensor, ' update every ', config.updateIntervalSecs, 'secs');
+  // By default, only fetch new data every 5 mins.
+  static readonly DEFAULT_UPDATE_INTERVAL_SECS = 300;
 
-      // this.service.getCharacteristic(hap.Characteristic.AirQuality)
-      //   .on(CharacteristicEventTypes.GET, (callback: CharacteristicGetCallback) => {
-      //     this.sensorReading.fetch();
-      //     log.info('Last reading: ' + this.sensorReading);
-      //     callback(undefined, this.sensorReading.airQualityHomekitReading);
-      //   });
+  // Never update more frequently than the following value.
+  static readonly MIN_UPDATE_INTERVAL_MS = 30 * 1000;
 
-      // this.service.getCharacteristic(hap.Characteristic.PM2_5Density)
-      //   .on(CharacteristicEventTypes.GET, (callback: CharacteristicGetCallback) => {
-      //     this.sensorReading.fetch();
-      //     log.info('Last reading: ' + this.sensorReading);
-      //     this.service.setCharacteristic(hap.Characteristic.ProductData, 'PM2.5: ' + this.sensorReading.pm25 + 'ug/m3');
-      //     callback(undefined, this.sensorReading.aqi);
-      //   });
+  private readonly log: Logging;
+  private readonly name: string;
+  private readonly sensor: string;
 
-      // this.service.getCharacteristic(hap.Characteristic.VOCDensity)
-      //   .on(CharacteristicEventTypes.GET, (callback: CharacteristicGetCallback) => {
-      //     this.sensorReading.fetch();
-      //     log.info('Last reading: ' + this.sensorReading);
-      //     callback(undefined, this.sensorReading.voc);
-      //   });
+  private readonly updateIntervalMs: number;
+  private readonly service: Service;
+  private readonly informationService: Service;
+  private lastReading?: SensorReading;
 
-      this.informationService = new hap.Service.AccessoryInformation()
-        .setCharacteristic(hap.Characteristic.Manufacturer, 'PurpleAir')
-        .setCharacteristic(hap.Characteristic.Model, 'PurpleAir')
-        .setCharacteristic(hap.Characteristic.SerialNumber, this.sensor);
+  constructor(log: Logging, config: AccessoryConfig, api: API) {
+    this.log = log;
+    this.sensor = config.sensor;
+    this.name = config.name;
+    this.service = new hap.Service.AirQualitySensor(this.name);
 
-      setInterval(() => {
-        this.update();
-      }, config.updateIntervalSecs * 1000);
-
-      this.update();
+    if (config.updateIntervalSecs) {
+      this.updateIntervalMs = config.updateIntervalSecs * 1000;
+    } else {
+      this.updateIntervalMs = PurpleAirSensor.DEFAULT_UPDATE_INTERVAL_SECS * 1000;
     }
 
-    update() {
-      const url = 'https://www.purpleair.com/json?show=' + this.sensor;
+    this.log('Initializing PurpleAirSensor', this.name, this.sensor, ' update every ', this.updateIntervalMs, 'ms');
 
-      this.log(`Fetching URL ${url}`);
+    this.service.getCharacteristic(hap.Characteristic.StatusActive)
+      .on(CharacteristicEventTypes.GET, (callback: CharacteristicGetCallback) => {
+        if (this.lastReading !== undefined) {
+          this.update();
+          callback(null, this.lastReadingActive);
+        } else {
+          callback(null, false);
+        }
+      });
+
+    this.informationService = new hap.Service.AccessoryInformation()
+      .setCharacteristic(hap.Characteristic.Manufacturer, 'PurpleAir')
+      .setCharacteristic(hap.Characteristic.Model, 'PurpleAir')
+      .setCharacteristic(hap.Characteristic.SerialNumber, this.sensor);
+
+    setInterval(() => {
+      this.update(); 
+    }, this.updateIntervalMs);
+
+    this.update();
+  }
+
+  update() {
+    const url = 'https://www.purpleair.com/json?show=' + this.sensor;
+
+    if (this.lastReading !== undefined && this.lastReading.updateTimeMs > Date.now() - PurpleAirSensor.MIN_UPDATE_INTERVAL_MS) {
+      this.log.debug(`Skipping a fetch because the last update was ${Date.now() - this.lastReading.updateTimeMs} ms ago`);
+    } else {
+      this.log.debug(`Fetching ${url}`);
+
       axios.get(url).then(resp => {
-        const sensorReading = new SensorReading(this.sensor, resp.data);
-        this.log(`Received new sensor reading ${sensorReading}`);
-        sensorReading.updateService(this.service);
+        this.lastReading = new SensorReading(this.sensor, resp.data);
+        this.log.debug(`Received new sensor reading ${this.lastReading}`);
+        this.updateHomeKit();
       }).catch(err => {
-        this.log(err);
+        this.log.error(`Fetching ${url}: ${err}`);
+        this.lastReading = undefined;
+        this.updateHomeKit();
       });
     }
-  
-    /*
-     * This method is optional to implement. It is called when HomeKit ask to identify the accessory.
-     * Typical this only ever happens at the pairing process.
-     */
-    identify(): void {
-      this.log('Identify!');
-    }
-  
+  }
 
-    /*
-     * This method is called directly after creation of this instance.
-     * It should return all services which should be added to the accessory.
-     */
-    getServices(): Service[] {
-      return [
-        this.informationService,
-        this.service,
-      ];
+  /*
+    * This method is optional to implement. It is called when HomeKit ask to identify the accessory.
+    * Typical this only ever happens at the pairing process.
+    */
+  identify(): void {
+    this.log('Identify!');
+  }
+
+  /*
+    * This method is called directly after creation of this instance.
+    * It should return all services which should be added to the accessory.
+    */
+  getServices(): Service[] {
+    return [
+      this.informationService,
+      this.service,
+    ];
+  }
+
+  get lastReadingActive(): boolean {
+    return this.lastReading ? this.lastReading.updateTimeMs > Date.now() - this.updateIntervalMs : false;
+  }
+
+  updateHomeKit() {
+    if (this.lastReading !== undefined) {
+      this.service.setCharacteristic(hap.Characteristic.AirQuality, this.lastReading.airQualityHomekitReading);
+      this.service.setCharacteristic(hap.Characteristic.PM2_5Density, this.lastReading.aqi);
+      this.service.setCharacteristic(hap.Characteristic.VOCDensity, this.lastReading.voc);
+      this.service.setCharacteristic(hap.Characteristic.StatusActive, this.lastReadingActive);
+      this.service.setCharacteristic(hap.Characteristic.StatusFault, 0);
+    } else {
+      this.service.setCharacteristic(hap.Characteristic.StatusActive, false);
+      this.service.setCharacteristic(hap.Characteristic.StatusFault, 1);
     }
+  }
 }
 
 
 class SensorReading {
   public readonly pm25 = 0;
   public readonly voc = 0;
-  public readonly updateTime: Date;
+  public readonly updateTimeMs: number;
 
+  /**
+   * Constructor
+   * @param sensor sensor station number (digits)
+   * @param data json data returned by PurpleAir JSON API
+   */
   constructor(public readonly sensor: string, public readonly data) {
     this.pm25 = data.results[0].PM2_5Value;
     this.voc = data.results[1].Voc;
-    this.updateTime = new Date();
-  }
-
-  updateService(service: Service) {
-    service.setCharacteristic(hap.Characteristic.AirQuality, this.airQualityHomekitReading);
-    service.setCharacteristic(hap.Characteristic.PM2_5Density, this.aqi);
-    service.setCharacteristic(hap.Characteristic.VOCDensity, this.voc);
-    service.setCharacteristic(hap.Characteristic.ProductData, `Last update: ${this.updateTime}\n${this}`);
+    this.updateTimeMs = Date.now();
   }
 
   public toString = () : string => {
@@ -135,6 +158,7 @@ class SensorReading {
   }
 
   static aqiToHomekit(aqi: number): number {
+    // This calculation was lifted from https://github.com/SANdood/homebridge-purpleair.
     if (aqi === undefined) {
       return 0; // Error or unknown response
     } else if (aqi <= 50) {
@@ -152,6 +176,7 @@ class SensorReading {
   }
   
   static pmToAQI(pm: number): number {
+    // This calculation was lifted from https://github.com/SANdood/homebridge-purpleair.
     let aqi: number;
     if (pm > 500) {
       aqi = 500;
@@ -176,6 +201,7 @@ class SensorReading {
   }
 
   static remap(value: number, fromLow: number, fromHigh: number, toLow: number, toHigh: number): number {
+    // This calculation was lifted from https://github.com/SANdood/homebridge-purpleair.
     const fromRange = fromHigh - fromLow;
     const toRange = toHigh - toLow;
     const scaleFactor = toRange / fromRange;

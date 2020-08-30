@@ -1,5 +1,4 @@
 {
-  "private": true,
   "displayName": "Homebridge PurpleAir Sensor",
   "name": "homebridge-purpleair-sensor",
   "version": "1.0.0",
