@@ -56,10 +56,12 @@ You can set the following fields:
 - `accessory` (required): must be `PurpleAirSensor`
 - `sensor` (required): the sensor number. Find the sensor number by going to <a href='https://www.purpleair.com/map'>PurpleAir's map</a> -> click on a sensor -> 'Get This Widget' -> 'JSON' and look at the URL. It's the number right after 'show'.
 - `name` (required): name of the sensor.
+- `aqiInsteadOfDensity` (optional, default false): If true, use the PM2.5 density field to report AQI instead.
 - `updateIntervalSecs` (optional, default 300): number of seconds the plugin will wait before updating the sensor value again.
 
 
 # Changelog
 
+- 1.1.0: Allow reporting AQI value in the field for PM2.5 density. I personally like the AQI value because I'm more used to it, but technically HomeKit only supports PM2.5 density rather than AQI.
 - 1.0.2: README updates.
 - 1.0.0: Initial version.

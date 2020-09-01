@@ -15,6 +15,10 @@
         "title": "Sensor Number",
         "type": "number",
         "required": true
+      },
+      "aqiInsteadOfDensity": {
+        "title": "Report AQI number instead of density (ug/m^3). HomeKit only allows reporting PM2.5 density instead of AQI value, but some people (e.g. author of the plugin) likes to see AQI value instead. If you check this box, the plugin will use the density field to report the AQI value.",
+        "type": "boolean"
       }
     }
   }

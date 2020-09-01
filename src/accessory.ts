@@ -30,6 +30,9 @@ class PurpleAirSensor implements AccessoryPlugin {
   private readonly name: string;
   private readonly sensor: string;
 
+  // Report AQI in the density field. See config.schema.json for the motivation.
+  private readonly aqiInsteadOfDensity: boolean = false;
+
   private readonly updateIntervalMs: number;
   private readonly service: Service;
   private readonly informationService: Service;
@@ -46,6 +49,8 @@ class PurpleAirSensor implements AccessoryPlugin {
     } else {
       this.updateIntervalMs = PurpleAirSensor.DEFAULT_UPDATE_INTERVAL_SECS * 1000;
     }
+
+    this.aqiInsteadOfDensity = config.aqiInsteadOfDensity ? config.aqiInsteadOfDensity : false;
 
     this.log('Initializing PurpleAirSensor', this.name, this.sensor, ' update every ', this.updateIntervalMs, 'ms');
 
@@ -82,11 +87,11 @@ class PurpleAirSensor implements AccessoryPlugin {
       axios.get(url).then(resp => {
         this.lastReading = new SensorReading(this.sensor, resp.data);
         this.log.debug(`Received new sensor reading ${this.lastReading}`);
-        this.updateHomeKit();
+        this.updateHomeKit(this.aqiInsteadOfDensity);
       }).catch(err => {
         this.log.error(`Fetching ${url}: ${err}`);
         this.lastReading = undefined;
-        this.updateHomeKit();
+        this.updateHomeKit(this.aqiInsteadOfDensity);
       });
     }
   }
@@ -114,10 +119,14 @@ class PurpleAirSensor implements AccessoryPlugin {
     return this.lastReading ? this.lastReading.updateTimeMs > Date.now() - this.updateIntervalMs : false;
   }
 
-  updateHomeKit() {
+  updateHomeKit(aqiInsteadOfDensity: boolean) {
     if (this.lastReading !== undefined) {
       this.service.setCharacteristic(hap.Characteristic.AirQuality, this.lastReading.airQualityHomekitReading);
-      this.service.setCharacteristic(hap.Characteristic.PM2_5Density, this.lastReading.aqi);
+      if (aqiInsteadOfDensity) {
+        this.service.setCharacteristic(hap.Characteristic.PM2_5Density, this.lastReading.aqi);
+      } else {
+        this.service.setCharacteristic(hap.Characteristic.PM2_5Density, this.lastReading.pm25);
+      }
       this.service.setCharacteristic(hap.Characteristic.VOCDensity, this.lastReading.voc);
       this.service.setCharacteristic(hap.Characteristic.StatusActive, this.lastReadingActive);
       this.service.setCharacteristic(hap.Characteristic.StatusFault, 0);
