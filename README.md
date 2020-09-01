@@ -1,7 +1,8 @@
 # PurpleAir Homebridge Accessory Plugin
 
-This is a Homebridge accessory plugin to display air quality information based
-on PurpleAir sensors.
+This is a Homebridge accessory plugin for monitoring air quality in Apple HomeKit. It creates virtual HomeKit
+air quality sensors based on real PurpleAir sensors. One setup, you can also configure home automation
+based on air quality changes.
 
 This project was inspired by [SANdood's homebridge-purpleair](https://github.com/SANdood/homebridge-purpleair),
 but with a few changes:
@@ -13,7 +14,10 @@ but with a few changes:
    it reuses the last updated value if it was fetched within 30 secs. This was done to prevent sending too many
    API requests to PurpleAir's servers. If the sensor is not opened by HomeKit, the plugin will update its value
    every 5 minutes by default.
-4. Rewritten in TypeScript.
+4. Allows reporting AQI value instead of PM2.5 density in HomeKit. The author is more used to reading AQI value,
+   but HomeKit has only a field for PM2.5 density value. The plugin allows you to configure displaying AQI value
+   in the density field.
+5. Rewritten in TypeScript.
 
 
 # Installation
@@ -62,6 +66,7 @@ You can set the following fields:
 
 # Changelog
 
+- 1.1.1: README updates.
 - 1.1.0: Allow reporting AQI value in the field for PM2.5 density. I personally like the AQI value because I'm more used to it, but technically HomeKit only supports PM2.5 density rather than AQI.
 - 1.0.2: README updates.
 - 1.0.0: Initial version.
