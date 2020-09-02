@@ -17,7 +17,8 @@ but with a few changes:
 4. Allows reporting AQI value instead of PM2.5 density in HomeKit. The author is more used to reading AQI value,
    but HomeKit has only a field for PM2.5 density value. The plugin allows you to configure displaying AQI value
    in the density field.
-5. Rewritten in TypeScript.
+5. Works with multiple sensors.
+6. Rewritten in TypeScript.
 
 
 # Installation
