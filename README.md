@@ -37,6 +37,7 @@ sudo service homebridge restart  # replace this with the command you need to res
 # Configuration
 
 You can configure this plugin using [homebridge-config-ui-x](https://www.npmjs.com/package/homebridge-config-ui-x) UI.
+
 If you want to configure manually by editing config.json file, add one entry per sensor you want to add to HomeKit
 to the `accessories` section. As an example:
 
@@ -60,12 +61,27 @@ You can set the following fields:
 - `accessory` (required): must be `PurpleAirSensor`
 - `sensor` (required): the sensor number. Find the sensor number by going to <a href='https://www.purpleair.com/map'>PurpleAir's map</a> -> click on a sensor -> 'Get This Widget' -> 'JSON' and look at the URL. It's the number right after 'show'.
 - `name` (required): name of the sensor.
-- `aqiInsteadOfDensity` (optional, default false): If true, use the PM2.5 density field to report AQI instead.
+- `aqiInsteadOfDensity` (optional, default false): if true, use the PM2.5 density field to report AQI instead.
 - `updateIntervalSecs` (optional, default 300): number of seconds the plugin will wait before updating the sensor value again.
+- `verboseLogging` (optional, default false): if true, log all information at info level so you can see through homebridge logs what the plugin is doing without running homebridge in debug mode.
+
+
+# Development Notes
+
+A few useful commands:
+
+```
+sudo npm run watch
+
+# publish new version
+npm login
+sudo npm publish
+```
 
 
 # Changelog
 
+- 1.2.0: Verbose logging option.
 - 1.1.1: README updates.
 - 1.1.0: Allow reporting AQI value in the field for PM2.5 density. I personally like the AQI value because I'm more used to it, but technically HomeKit only supports PM2.5 density rather than AQI.
 - 1.0.2: README updates.

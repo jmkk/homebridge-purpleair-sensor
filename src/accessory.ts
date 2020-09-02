@@ -26,7 +26,8 @@ class PurpleAirSensor implements AccessoryPlugin {
   // Never update more frequently than the following value.
   static readonly MIN_UPDATE_INTERVAL_MS = 30 * 1000;
 
-  private readonly log: Logging;
+  private readonly logger: Logging;
+  private readonly log: (message: string) => void;
   private readonly name: string;
   private readonly sensor: string;
 
@@ -38,8 +39,8 @@ class PurpleAirSensor implements AccessoryPlugin {
   private readonly informationService: Service;
   private lastReading?: SensorReading;
 
-  constructor(log: Logging, config: AccessoryConfig, api: API) {
-    this.log = log;
+  constructor(logger: Logging, config: AccessoryConfig, api: API) {
+    this.logger = logger;
     this.sensor = config.sensor;
     this.name = config.name;
     this.service = new hap.Service.AirQualitySensor(this.name);
@@ -52,7 +53,14 @@ class PurpleAirSensor implements AccessoryPlugin {
 
     this.aqiInsteadOfDensity = config.aqiInsteadOfDensity ? config.aqiInsteadOfDensity : false;
 
-    this.log('Initializing PurpleAirSensor', this.name, this.sensor, ' update every ', this.updateIntervalMs, 'ms');
+    this.logger.info(`Initializing PurpleAirSensor ${this.name} ${this.sensor} update every ${this.updateIntervalMs} ms`);
+
+    if (config.verboseLogging) {
+      this.log = (msg: string) => this.logger.info(msg);
+      this.logger.info('Use verbose logging');
+    } else {
+      this.log = (msg: string) => this.logger.debug(msg);
+    }
 
     this.service.getCharacteristic(hap.Characteristic.StatusActive)
       .on(CharacteristicEventTypes.GET, (callback: CharacteristicGetCallback) => {
@@ -80,16 +88,16 @@ class PurpleAirSensor implements AccessoryPlugin {
     const url = 'https://www.purpleair.com/json?show=' + this.sensor;
 
     if (this.lastReading !== undefined && this.lastReading.updateTimeMs > Date.now() - PurpleAirSensor.MIN_UPDATE_INTERVAL_MS) {
-      this.log.debug(`Skipping a fetch because the last update was ${Date.now() - this.lastReading.updateTimeMs} ms ago`);
+      this.log(`Skipping a fetch because the last update was ${Date.now() - this.lastReading.updateTimeMs} ms ago`);
     } else {
-      this.log.debug(`Fetching ${url}`);
+      this.log(`Fetching ${url}`);
 
       axios.get(url).then(resp => {
         this.lastReading = new SensorReading(this.sensor, resp.data);
-        this.log.debug(`Received new sensor reading ${this.lastReading}`);
+        this.log(`Received new sensor reading ${this.lastReading}`);
         this.updateHomeKit(this.aqiInsteadOfDensity);
       }).catch(err => {
-        this.log.error(`Fetching ${url}: ${err}`);
+        this.logger.error(`Fetching ${url}: ${err}`);
         this.lastReading = undefined;
         this.updateHomeKit(this.aqiInsteadOfDensity);
       });
@@ -101,7 +109,7 @@ class PurpleAirSensor implements AccessoryPlugin {
     * Typical this only ever happens at the pairing process.
     */
   identify(): void {
-    this.log('Identify!');
+    this.logger('Identify!');
   }
 
   /*
