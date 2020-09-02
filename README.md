@@ -28,7 +28,7 @@ Search for `homebridge-purpleair-sensor` and just click install. Once done, conf
 If you want to install manually via the command line, run the following:
 
 ```
-sudo npm install -g --unsafe-perm homebridge  # remove sudo if your setup does not require it
+sudo npm install -g --unsafe-perm homebridge-purpleair-sensor
 
 sudo service homebridge restart  # replace this with the command you need to restart homebridge
 ```
@@ -81,6 +81,7 @@ sudo npm publish
 
 # Changelog
 
+- 1.2.1: Fix installation instruction.
 - 1.2.0: Verbose logging option.
 - 1.1.1: README updates.
 - 1.1.0: Allow reporting AQI value in the field for PM2.5 density. I personally like the AQI value because I'm more used to it, but technically HomeKit only supports PM2.5 density rather than AQI.
