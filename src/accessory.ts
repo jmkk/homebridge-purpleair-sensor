@@ -33,6 +33,8 @@ class PurpleAirSensor implements AccessoryPlugin {
   private readonly name: string;
   private readonly sensor: string;
 
+  private readonly averages: string;
+
   // Report AQI in the density field. See config.schema.json for the motivation.
   private readonly aqiInsteadOfDensity: boolean = false;
 
@@ -53,9 +55,11 @@ class PurpleAirSensor implements AccessoryPlugin {
       this.updateIntervalMs = PurpleAirSensor.DEFAULT_UPDATE_INTERVAL_SECS * 1000;
     }
 
+    this.averages = config.averages;
     this.aqiInsteadOfDensity = config.aqiInsteadOfDensity ? config.aqiInsteadOfDensity : false;
 
-    this.logger.info(`Initializing PurpleAirSensor ${this.name} ${this.sensor} update every ${this.updateIntervalMs} ms`);
+    // eslint-disable-next-line max-len
+    this.logger.info(`Initializing PurpleAirSensor ${this.name} ${this.sensor} update every ${this.updateIntervalMs} ms using ${this.averages} averages`);
 
     if (config.verboseLogging) {
       this.log = (msg: string) => this.logger.info(msg);
@@ -95,7 +99,7 @@ class PurpleAirSensor implements AccessoryPlugin {
       this.log(`Fetching ${url}`);
 
       axios.get(url).then(resp => {
-        this.lastReading = parsePurpleAirJson(resp.data);
+        this.lastReading = parsePurpleAirJson(resp.data, this.averages);
         this.log(`Received new sensor reading ${this.lastReading}`);
         this.updateHomeKit(this.aqiInsteadOfDensity);
       }).catch(err => {

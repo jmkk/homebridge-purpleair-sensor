@@ -1,10 +1,17 @@
 
-export function parsePurpleAirJson(data) {
-  return new SensorReading(
-    data.results[0].ID,
-    parseFloat(data.results[0].PM2_5Value),
-    parseFloat(data.results[1].Voc),
-  );
+export function parsePurpleAirJson(data, averages?: string) {
+  const pm25 = (() => {
+    switch (averages) {
+      case '10m': return JSON.parse(data.results[0].Stats).v1;
+      case '30m': return JSON.parse(data.results[0].Stats).v2;
+      case '60m': return JSON.parse(data.results[0].Stats).v3;
+      default: return parseFloat(data.results[0].PM2_5Value);
+    }
+  })();
+
+  const sensor = data.results[0].ID;
+  const voc = parseFloat(data.results[1].Voc);
+  return new SensorReading(sensor, pm25, voc);
 }
 
 export class SensorReading {

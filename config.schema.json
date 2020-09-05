@@ -16,6 +16,16 @@
         "type": "number",
         "required": true
       },
+      "averages": {
+        "title": "Reading Averages (default = realtime)",
+        "type": "string",
+        "oneOf": [
+          { "title": "Show Realtime", "enum": ["realtime"] },
+          { "title": "10 Minute Average", "enum": ["10m"] },
+          { "title": "30 Minute Average", "enum": ["30m"] },
+          { "title": "One Hour Average", "enum": ["60m"] }
+        ]
+      },
       "aqiInsteadOfDensity": {
         "title": "Report AQI number instead of density (ug/m^3). HomeKit only allows reporting PM2.5 density instead of AQI value, but some people (e.g. author of the plugin) likes to see AQI value instead. If checked, the plugin will use the density field to report the AQI value.",
         "type": "boolean"

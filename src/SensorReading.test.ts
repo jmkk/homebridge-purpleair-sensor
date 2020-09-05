@@ -4,17 +4,30 @@ import testIndoorData from './test-indoor-with-voc.json';
 import testOutdoorData from './test-outdoor.json';
 
 test('indoor sensor with VOC', () => {
-  // eslint-disable-next-line max-len
   const reading = parsePurpleAirJson(testIndoorData);
   expect(reading.pm25).toBe(6.86);
   expect(reading.voc).toBe(81.0);
 });
 
 test('outdoor sensor', () => {
-  // eslint-disable-next-line max-len
   const reading = parsePurpleAirJson(testOutdoorData);
   expect(reading.pm25).toBe(46.96);
   expect(reading.voc).toBe(NaN);
+});
+
+test('10m averages', () => {
+  const reading = parsePurpleAirJson(testIndoorData, '10m');
+  expect(reading.pm25).toBe(6.83);
+});
+
+test('30m averages', () => {
+  const reading = parsePurpleAirJson(testIndoorData, '30m');
+  expect(reading.pm25).toBe(7.61);
+});
+
+test('60m averages', () => {
+  const reading = parsePurpleAirJson(testIndoorData, '60m');
+  expect(reading.pm25).toBe(9.37);
 });
 
 test('AQI excellent', () => {
