@@ -82,6 +82,7 @@ sudo npm publish
 
 # Changelog
 
+- 1.3.0: Added unit tests for parsing and ability to extract more values.
 - 1.2.1: Fix installation instruction.
 - 1.2.0: Verbose logging option.
 - 1.1.1: README updates.
