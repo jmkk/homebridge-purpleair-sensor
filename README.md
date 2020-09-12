@@ -63,7 +63,7 @@ to the `accessories` section. As an example:
 You can set the following fields:
 
 - `accessory` (required): must be `PurpleAirSensor`
-- `sensor` (required): the sensor number. Find the sensor number by going to <a href='https://www.purpleair.com/map'>PurpleAir's map</a> -> click on a sensor -> 'Get This Widget' -> 'JSON' and look at the URL. It's the number right after 'show'.
+- `sensor` (required): the sensor number. Find the sensor number by going to <a href='https://www.purpleair.com/map'>PurpleAir's map</a> -> click on a sensor -> Look at the URL. It's the number right after 'select='.
 - `name` (required): name of the sensor.
 - `averages` (optional, default realtime): sensor reading averages. Supports the following values:
   - `realtime`
