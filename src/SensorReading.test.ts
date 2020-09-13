@@ -18,7 +18,6 @@ test('outdoor sensor', () => {
 
 test('10m averages', () => {
   const reading = parsePurpleAirJson(testIndoorData, '10m');
-
   expect(reading.pm25).toBe(6.83);
 });
 
@@ -100,7 +99,6 @@ test('AQandU poor', () => {
 
 test('Nearby 167 None', () => {
   const reading = parsePurpleAirJson(nearbyData, 'realtime', 'None');
-
   expect(reading.pm25).toBe(86.47);
   expect(reading.aqi).toBe(167);
   expect(reading.airQualityHomekitReading).toBe(4);
@@ -108,7 +106,6 @@ test('Nearby 167 None', () => {
 
 test('Nearby 158 AQandU', () => {
   const reading = parsePurpleAirJson(nearbyData, 'realtime', 'AQandU');
-
   expect(reading.pm25).toBe(86.47);
   expect(reading.aqi).toBe(158);
   expect(reading.airQualityHomekitReading).toBe(4);
@@ -116,7 +113,6 @@ test('Nearby 158 AQandU', () => {
 
 test('Nearby 118 LRAPA', () => {
   const reading = parsePurpleAirJson(nearbyData, 'realtime', 'LRAPA');
-
   expect(reading.pm25).toBe(86.47);
   expect(reading.aqi).toBe(118);
   expect(reading.airQualityHomekitReading).toBe(3);
