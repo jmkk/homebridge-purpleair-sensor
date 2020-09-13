@@ -56,7 +56,7 @@ to the `accessories` section. As an example:
         "accessory": "PurpleAirSensor",
         "sensor": "54321",
         "name": "PurpleAir Outdoor Sensor",
-        "conversoin": "None",
+        "conversion": "None",
         "averages": "10m"
     }
 ],
