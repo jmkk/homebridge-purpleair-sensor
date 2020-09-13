@@ -2,6 +2,7 @@ import { parsePurpleAirJson, SensorReading } from './SensorReading';
 
 import testIndoorData from './test-indoor-with-voc.json';
 import testOutdoorData from './test-outdoor.json';
+import nearbyData from './test-62393.json';
 
 test('indoor sensor with VOC', () => {
   const reading = parsePurpleAirJson(testIndoorData);
@@ -17,6 +18,7 @@ test('outdoor sensor', () => {
 
 test('10m averages', () => {
   const reading = parsePurpleAirJson(testIndoorData, '10m');
+
   expect(reading.pm25).toBe(6.83);
 });
 
@@ -30,32 +32,62 @@ test('60m averages', () => {
   expect(reading.pm25).toBe(9.37);
 });
 
-test('AQI excellent', () => {
-  const reading = new SensorReading('1234', 6.86, NaN);
-  expect(Math.round(reading.aqi)).toBe(29);
+test('AQandU excellent', () => {
+  const reading = new SensorReading('1234', 6.86, NaN, 'AQandU');
+  expect(Math.round(reading.aqi)).toBe(33);
   expect(reading.airQualityHomekitReading).toBe(1);
 });
 
-test('AQI good', () => {
-  const reading = new SensorReading('1234', 13.1, NaN);
-  expect(Math.round(reading.aqi)).toBe(52);
+test('AQandU good', () => {
+  const reading = new SensorReading('1234', 13.1, NaN, 'AQandU');
+  expect(Math.round(reading.aqi)).toBe(53);
   expect(reading.airQualityHomekitReading).toBe(2);
 });
 
-test('AQI fair', () => {
-  const reading = new SensorReading('1234', 35.9, NaN);
-  expect(Math.round(reading.aqi)).toBe(101);
+test('AQandU good 2', () => {
+  const reading = new SensorReading('1234', 35.9, NaN, 'AQandU');
+  expect(Math.round(reading.aqi)).toBe(90);
+  expect(reading.airQualityHomekitReading).toBe(2);
+});
+
+test('AQandU fair', () => {
+  const reading = new SensorReading('1234', 65.1, NaN, 'AQandU');
+  expect(Math.round(reading.aqi)).toBe(145);
   expect(reading.airQualityHomekitReading).toBe(3);
 });
 
-test('AQI inferior', () => {
-  const reading = new SensorReading('1234', 65.1, NaN);
-  expect(Math.round(reading.aqi)).toBe(155);
+test('AQandU inferior', () => {
+  const reading = new SensorReading('1234', 154.5, NaN, 'AQandU');
+  expect(Math.round(reading.aqi)).toBe(186);
   expect(reading.airQualityHomekitReading).toBe(4);
 });
 
-test('AQI poor', () => {
-  const reading = new SensorReading('1234', 154.5, NaN);
-  expect(Math.round(reading.aqi)).toBe(204);
+test('AQandU poor', () => {
+  const reading = new SensorReading('1234', 200.5, NaN, 'AQandU');
+  expect(Math.round(reading.aqi)).toBe(209);
   expect(reading.airQualityHomekitReading).toBe(5);
+});
+
+test('Nearby 167 None', () => {
+  const reading = parsePurpleAirJson(nearbyData, 'realtime', 'None');
+
+  expect(reading.pm25).toBe(86.47);
+  expect(reading.aqi).toBe(167);
+  expect(reading.airQualityHomekitReading).toBe(4);
+});
+
+test('Nearby 158 AQandU', () => {
+  const reading = parsePurpleAirJson(nearbyData, 'realtime', 'AQandU');
+
+  expect(reading.pm25).toBe(86.47);
+  expect(reading.aqi).toBe(158);
+  expect(reading.airQualityHomekitReading).toBe(4);
+});
+
+test('Nearby 118 LRAPA', () => {
+  const reading = parsePurpleAirJson(nearbyData, 'realtime', 'LRAPA');
+
+  expect(reading.pm25).toBe(86.47);
+  expect(reading.aqi).toBe(118);
+  expect(reading.airQualityHomekitReading).toBe(3);
 });

@@ -16,6 +16,17 @@
         "type": "number",
         "required": true
       },
+      "conversion" : {
+        "title": "Conversions help accomodate different types of pollution with different particle densities",
+        "type": "string",
+        "require": false,
+        "default": "AQandU",
+        "oneOf": [
+          { "title": "None", "enum": ["None"] },
+          { "title": "AQandU", "enum": ["AQandU"] },
+          { "title": "LRAPA", "enum": ["LRAPA"] }
+        ]
+      },
       "averages": {
         "title": "Reading Averages (default = realtime)",
         "type": "string",
