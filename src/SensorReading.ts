@@ -1,6 +1,6 @@
 
 export function parsePurpleAirJson(data, averages?: string, conversion?: string) {
-  const conv = conversion ?? 'AQandU';
+  const conv = conversion ?? 'None';
   const pm25 = (() => {
     switch (averages) {
       case '10m': return JSON.parse(data.results[0].Stats).v1;
@@ -23,7 +23,7 @@ export class SensorReading {
    * @param sensor sensor station number (digits)
    * @param pm25 sensor pm 2.5 value (PM2_5Value)
    * @param voc sensor Voc value
-   * @param conversion conversion ("None", "AQandU", or "LRAPA")
+   * @param conversion conversion ("None", "AQandU", or "LRAPA"). Default to None.
    */
   constructor(
       public readonly sensor: string,
@@ -39,14 +39,14 @@ export class SensorReading {
 
   get aqi(): number {
     switch (this.conversion) {
-      case 'None' : {
-        return SensorReading.pmToAQI(this.pm25);
+      case 'AQandU' : {
+        return SensorReading.pmToAQandU(this.pm25);
       }
       case 'LRAPA': {
         return SensorReading.pmToLRAPA(this.pm25);
       }
-      default: { // "AQandU"
-        return SensorReading.pmToAQandU(this.pm25);
+      default: {
+        return SensorReading.pmToAQI(this.pm25);
       }
     }
   }
