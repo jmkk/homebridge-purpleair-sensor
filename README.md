@@ -1,7 +1,7 @@
 # PurpleAir Homebridge Accessory Plugin
 
 This is a Homebridge accessory plugin for monitoring air quality in Apple HomeKit. It creates virtual HomeKit
-air quality sensors based on real PurpleAir sensors. One setup, you can also configure home automation
+air quality sensors based on real PurpleAir sensors. Once setup, you can also configure home automation
 based on air quality changes.
 
 This project was inspired by [SANdood's homebridge-purpleair](https://github.com/SANdood/homebridge-purpleair),
@@ -49,12 +49,14 @@ to the `accessories` section. As an example:
         "accessory": "PurpleAirSensor",
         "sensor": "12345",
         "name": "PurpleAir Indoor Sensor",
+        "conversion": "None",
         "averages": "realtime"
     },
     {
         "accessory": "PurpleAirSensor",
         "sensor": "54321",
         "name": "PurpleAir Outdoor Sensor",
+        "conversion": "None",
         "averages": "10m"
     }
 ],
@@ -65,11 +67,15 @@ You can set the following fields:
 - `accessory` (required): must be `PurpleAirSensor`
 - `sensor` (required): the sensor number. Find the sensor number by going to <a href='https://www.purpleair.com/map'>PurpleAir's map</a> -> click on a sensor -> Look at the URL. It's the number right after 'select='.
 - `name` (required): name of the sensor.
+- `conversion` (optional): Conversions help accomodate different types of pollution with different particle densities. Supports the following values:
+    - `None` (default)
+    - `AQandU`
+    - `LRAPA`
 - `averages` (optional, default realtime): sensor reading averages. Supports the following values:
-  - `realtime`
-  - `10m`: 10 Minute Average
-  - `30m`: 30 Minute Average
-  - `60m`: One Hour Average
+    - `realtime`
+    - `10m`: 10 Minute Average
+    - `30m`: 30 Minute Average
+    - `60m`: One Hour Average
 - `aqiInsteadOfDensity` (optional, default false): if true, use the PM2.5 density field to report AQI instead.
 - `updateIntervalSecs` (optional, default 300): number of seconds the plugin will wait before updating the sensor value again.
 - `verboseLogging` (optional, default false): if true, log all information at info level so you can see through homebridge logs what the plugin is doing without running homebridge in debug mode.

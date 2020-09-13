@@ -1,5 +1,6 @@
 
-export function parsePurpleAirJson(data, averages?: string) {
+export function parsePurpleAirJson(data, averages?: string, conversion?: string) {
+  const conv = conversion ?? 'AQandU';
   const pm25 = (() => {
     switch (averages) {
       case '10m': return JSON.parse(data.results[0].Stats).v1;
@@ -11,7 +12,7 @@ export function parsePurpleAirJson(data, averages?: string) {
 
   const sensor = data.results[0].ID;
   const voc = parseFloat(data.results[1].Voc);
-  return new SensorReading(sensor, pm25, voc);
+  return new SensorReading(sensor, pm25, voc, conv);
 }
 
 export class SensorReading {
@@ -20,12 +21,15 @@ export class SensorReading {
   /**
    * Constructor
    * @param sensor sensor station number (digits)
-   * @param data json data returned by PurpleAir JSON API
+   * @param pm25 sensor pm 2.5 value (PM2_5Value)
+   * @param voc sensor Voc value
+   * @param conversion conversion ("None", "AQandU", or "LRAPA")
    */
   constructor(
       public readonly sensor: string,
       public readonly pm25: number,
-      public readonly voc: number) {
+      public readonly voc: number,
+      public readonly conversion: string) {
     this.updateTimeMs = Date.now();
   }
 
@@ -34,7 +38,17 @@ export class SensorReading {
   }
 
   get aqi(): number {
-    return SensorReading.pmToAQI(this.pm25);
+    switch (this.conversion) {
+      case 'None' : {
+        return SensorReading.pmToAQI(this.pm25);
+      }
+      case 'LRAPA': {
+        return SensorReading.pmToLRAPA(this.pm25);
+      }
+      default: { // "AQandU"
+        return SensorReading.pmToAQandU(this.pm25);
+      }
+    }
   }
 
   get airQualityHomekitReading(): number {
@@ -58,43 +72,47 @@ export class SensorReading {
     }
     return 0;
   }
+
+  static pmToAQandU(pm: number): number {
+    // formula found on https://www.purpleair.com/map, shown when you hover on the `?` next to `Conversion`
+    return this.pmToAQI(0.778 * pm + 2.65);
+  }
+
+  static pmToLRAPA(pm: number): number {
+    // formula found on https://www.purpleair.com/map, shown when you hover on the `?` next to `Conversion`
+    return this.pmToAQI(0.5 * pm - 0.66);
+  }
   
   static pmToAQI(pm: number): number {
-    // This calculation was lifted from https://github.com/SANdood/homebridge-purpleair.
     let aqi: number;
-    if (pm > 500) {
-      aqi = 500;
-    } else if (pm > 350.5) {
-      aqi = this.remap(pm, 350.5, 500.5, 400, 500);
+
+    if (pm > 350.5) {
+      aqi = this.calcAQI(pm, 500, 401, 500, 350.5);
     } else if (pm > 250.5) {
-      aqi = this.remap(pm, 250.5, 350.5, 300, 400);
+      aqi = this.calcAQI(pm, 400, 301, 350.4, 250.5);
     } else if (pm > 150.5) {
-      aqi = this.remap(pm, 150.5, 250.5, 200, 300);
+      aqi = this.calcAQI(pm, 300, 201, 250.4, 150.5);
     } else if (pm > 55.5) {
-      aqi = this.remap(pm, 55.5, 150.5, 150, 200);
+      aqi = this.calcAQI(pm, 200, 151, 150.4, 55.5);
     } else if (pm > 35.5) {
-      aqi = this.remap(pm, 35.5, 55.5, 100, 150);
-    } else if (pm > 12) {
-      aqi = this.remap(pm, 12, 35.5, 50, 100);
-    } else if (pm > 0) {
-      aqi = this.remap(pm, 0, 12, 0, 50);
+      aqi = this.calcAQI(pm, 150, 101, 55.4, 35.5);
+    } else if (pm > 12.1) {
+      aqi = this.calcAQI(pm, 100, 51, 35.4, 12.1);
+    } else if (pm >= 0) {
+      aqi = this.calcAQI(pm, 50, 0, 12, 0);
     } else {
-      aqi = 0; 
+      aqi = 0;
     }
+
     return aqi;
   }
 
-  static remap(value: number, fromLow: number, fromHigh: number, toLow: number, toHigh: number): number {
-    // This calculation was lifted from https://github.com/SANdood/homebridge-purpleair.
-    const fromRange = fromHigh - fromLow;
-    const toRange = toHigh - toLow;
-    const scaleFactor = toRange / fromRange;
-
-    // Re-zero the value within the from range
-    let tmpValue = value - fromLow;
-    // Rescale the value to the to range
-    tmpValue *= scaleFactor;
-    // Re-zero back to the to range
-    return tmpValue + toLow;
+  static calcAQI(Cp: number, Ih: number, Il: number, BPh: number, BPl: number): number {
+    // The AQI equation https://forum.airnowtech.org/t/the-aqi-equation/169
+    // c = concentration, I = AQI, and BP = breakpoint
+    const a = Ih - Il;
+    const b = BPh - BPl;
+    const c = Cp - BPl;
+    return Math.round((a / b) * c + Il);
   }
 }
