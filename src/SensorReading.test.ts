@@ -31,6 +31,11 @@ test('60m averages', () => {
   expect(reading.pm25).toBe(9.37);
 });
 
+test('default to no conversion', () => {
+  const reading = parsePurpleAirJson(testIndoorData);
+  expect(Math.round(reading.aqi)).toBe(29);
+});
+
 test('AQI excellent', () => {
   const reading = new SensorReading('1234', 6.86, NaN, 'None');
   expect(Math.round(reading.aqi)).toBe(29);
