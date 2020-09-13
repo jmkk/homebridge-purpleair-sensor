@@ -96,10 +96,8 @@ sudo npm publish
 
 # Changelog
 
+- 1.4.0: Add AQandU and LRAPA conversions.
 - 1.3.0: Added unit tests for parsing and ability to report averages in addition to realtime values.
-- 1.2.1: Fix installation instruction.
 - 1.2.0: Verbose logging option.
-- 1.1.1: README updates.
 - 1.1.0: Allow reporting AQI value in the field for PM2.5 density. I personally like the AQI value because I'm more used to it, but technically HomeKit only supports PM2.5 density rather than AQI.
-- 1.0.2: README updates.
 - 1.0.0: Initial version.
