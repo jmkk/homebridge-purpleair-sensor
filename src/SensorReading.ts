@@ -74,10 +74,12 @@ export class SensorReading {
   }
 
   static pmToAQandU(pm: number): number {
+    // formula found on https://www.purpleair.com/map, shown when you hover on the `?` next to `Conversion`
     return this.pmToAQI(0.778 * pm + 2.65);
   }
 
   static pmToLRAPA(pm: number): number {
+    // formula found on https://www.purpleair.com/map, shown when you hover on the `?` next to `Conversion`
     return this.pmToAQI(0.5 * pm - 0.66);
   }
   
@@ -107,6 +109,7 @@ export class SensorReading {
 
   static calcAQI(Cp: number, Ih: number, Il: number, BPh: number, BPl: number): number {
     // The AQI equation https://forum.airnowtech.org/t/the-aqi-equation/169
+    // c = concentration, I = AQI, and BP = breakpoint
     const a = Ih - Il;
     const b = BPh - BPl;
     const c = Cp - BPl;

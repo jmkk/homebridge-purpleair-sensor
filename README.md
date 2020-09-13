@@ -49,14 +49,14 @@ to the `accessories` section. As an example:
         "accessory": "PurpleAirSensor",
         "sensor": "12345",
         "name": "PurpleAir Indoor Sensor",
-        "conversoin": "AQandU",
+        "conversoin": "None",
         "averages": "realtime"
     },
     {
         "accessory": "PurpleAirSensor",
         "sensor": "54321",
         "name": "PurpleAir Outdoor Sensor",
-        "conversoin": "AQandU",
+        "conversoin": "None",
         "averages": "10m"
     }
 ],
@@ -68,8 +68,8 @@ You can set the following fields:
 - `sensor` (required): the sensor number. Find the sensor number by going to <a href='https://www.purpleair.com/map'>PurpleAir's map</a> -> click on a sensor -> Look at the URL. It's the number right after 'select='.
 - `name` (required): name of the sensor.
 - `conversion` (optional): Conversions help accomodate different types of pollution with different particle densities. Supports the following values:
-    - `None`
-    - `AQandU` (default)
+    - `None` (default)
+    - `AQandU`
     - `LRAPA`
 - `averages` (optional, default realtime): sensor reading averages. Supports the following values:
     - `realtime`

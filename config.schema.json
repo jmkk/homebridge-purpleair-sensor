@@ -20,7 +20,7 @@
         "title": "Conversions help accomodate different types of pollution with different particle densities",
         "type": "string",
         "require": false,
-        "default": "AQandU",
+        "default": "None",
         "oneOf": [
           { "title": "None", "enum": ["None"] },
           { "title": "AQandU", "enum": ["AQandU"] },

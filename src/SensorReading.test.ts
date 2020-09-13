@@ -32,6 +32,36 @@ test('60m averages', () => {
   expect(reading.pm25).toBe(9.37);
 });
 
+test('AQI excellent', () => {
+  const reading = new SensorReading('1234', 6.86, NaN, 'None');
+  expect(Math.round(reading.aqi)).toBe(29);
+  expect(reading.airQualityHomekitReading).toBe(1);
+});
+
+test('AQI good', () => {
+  const reading = new SensorReading('1234', 13.1, NaN, 'None');
+  expect(Math.round(reading.aqi)).toBe(53);
+  expect(reading.airQualityHomekitReading).toBe(2);
+});
+
+test('AQI fair', () => {
+  const reading = new SensorReading('1234', 35.9, NaN, 'None');
+  expect(Math.round(reading.aqi)).toBe(102);
+  expect(reading.airQualityHomekitReading).toBe(3);
+});
+
+test('AQI inferior', () => {
+  const reading = new SensorReading('1234', 65.1, NaN, 'None');
+  expect(Math.round(reading.aqi)).toBe(156);
+  expect(reading.airQualityHomekitReading).toBe(4);
+});
+
+test('AQI poor', () => {
+  const reading = new SensorReading('1234', 154.5, NaN, 'None');
+  expect(Math.round(reading.aqi)).toBe(205);
+  expect(reading.airQualityHomekitReading).toBe(5);
+});
+
 test('AQandU excellent', () => {
   const reading = new SensorReading('1234', 6.86, NaN, 'AQandU');
   expect(Math.round(reading.aqi)).toBe(33);
