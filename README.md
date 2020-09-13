@@ -49,7 +49,7 @@ to the `accessories` section. As an example:
         "accessory": "PurpleAirSensor",
         "sensor": "12345",
         "name": "PurpleAir Indoor Sensor",
-        "conversoin": "None",
+        "conversion": "None",
         "averages": "realtime"
     },
     {
