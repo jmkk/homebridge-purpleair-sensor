@@ -1,6 +1,7 @@
 import { parsePurpleAirJson, SensorReading } from './SensorReading';
 
 import testIndoorData from './test-indoor-with-voc.json';
+import testIndoorWithoutVocData from './test-indoor-without-voc.json';
 import testOutdoorData from './test-outdoor.json';
 import nearbyData from './test-62393.json';
 
@@ -10,10 +11,17 @@ test('indoor sensor with VOC', () => {
   expect(reading.voc).toBe(81.0);
 });
 
+test('indoor sensor without VOC', () => {
+  const reading = parsePurpleAirJson(testIndoorWithoutVocData);
+  expect(reading.pm25).toBe(6.86);
+  expect(reading.voc).toBe(null)
+});
+
+
 test('outdoor sensor', () => {
   const reading = parsePurpleAirJson(testOutdoorData);
   expect(reading.pm25).toBe(46.96);
-  expect(reading.voc).toBe(NaN);
+  expect(reading.voc).toBe(null);
 });
 
 test('10m averages', () => {
