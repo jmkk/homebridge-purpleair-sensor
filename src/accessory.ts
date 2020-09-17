@@ -32,6 +32,7 @@ class PurpleAirSensor implements AccessoryPlugin {
   private readonly log: (message: string) => void;
   private readonly name: string;
   private readonly sensor: string;
+  private readonly key?: string;
 
   private readonly averages: string;
   private readonly conversion: string;
@@ -47,6 +48,7 @@ class PurpleAirSensor implements AccessoryPlugin {
   constructor(logger: Logging, config: AccessoryConfig, api: API) {
     this.logger = logger;
     this.sensor = config.sensor;
+    this.key = config.key;
     this.name = config.name;
     this.service = new hap.Service.AirQualitySensor(this.name);
 
@@ -93,14 +95,19 @@ class PurpleAirSensor implements AccessoryPlugin {
   }
 
   update() {
-    const url = 'https://www.purpleair.com/json?show=' + this.sensor;
+    const url = 'https://www.purpleair.com/json';
 
     if (this.lastReading !== undefined && this.lastReading.updateTimeMs > Date.now() - PurpleAirSensor.MIN_UPDATE_INTERVAL_MS) {
       this.log(`Skipping a fetch because the last update was ${Date.now() - this.lastReading.updateTimeMs} ms ago`);
     } else {
       this.log(`Fetching ${url}`);
 
-      axios.get(url).then(resp => {
+      axios.get(url, {
+        params: {
+          show: this.sensor,
+          key: this.key,
+        },
+      }).then(resp => {
         this.lastReading = parsePurpleAirJson(resp.data, this.averages, this.conversion);
         this.log(`Received new sensor reading ${this.lastReading}`);
         this.updateHomeKit(this.aqiInsteadOfDensity);
