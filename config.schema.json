@@ -18,7 +18,7 @@
       },
       "key": {
         "title": "Key",
-        "type": "number",
+        "type": "string",
         "required": false
       },
       "conversion" : {
