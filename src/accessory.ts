@@ -95,7 +95,7 @@ class PurpleAirSensor implements AccessoryPlugin {
     this.update();
   }
 
-  update() {
+  async update() {
     const url = 'https://www.purpleair.com/json';
 
     const axiosInstance = axios.create();
@@ -109,27 +109,28 @@ class PurpleAirSensor implements AccessoryPlugin {
 
     if (this.lastReading !== undefined && this.lastReading.updateTimeMs > Date.now() - PurpleAirSensor.MIN_UPDATE_INTERVAL_MS) {
       this.log(`Skipping a fetch because the last update was ${Date.now() - this.lastReading.updateTimeMs} ms ago`);
-    } else {
-      this.log(`Fetching`);
+      return
+    } 
 
-      axiosInstance.get(url, {
+    try {
+      const resp = await axiosInstance.get(url, {
         params: {
           show: this.sensor,
           key: this.key,
         },
-      }).then(resp => {
-        if (!resp.data.results[0]) {
-          throw new Error('No sensor found')
-        }
+      })
 
-        this.lastReading = parsePurpleAirJson(resp.data, this.averages, this.conversion);
-        this.log(`Received new sensor reading ${this.lastReading}`);
-        this.updateHomeKit(this.aqiInsteadOfDensity);
-      }).catch(err => {
-        this.logger.error(`Fetching ${url}: ${err}`);
-        this.lastReading = undefined;
-        this.updateHomeKit(this.aqiInsteadOfDensity);
-      });
+      if (!resp.data.results[0]) {
+        throw new Error('No sensor found')
+      }
+
+      this.lastReading = parsePurpleAirJson(resp.data, this.averages, this.conversion);
+      this.log(`Received new sensor reading ${this.lastReading}`);
+      this.updateHomeKit(this.aqiInsteadOfDensity);
+    } catch(err) {
+      this.logger.error(`Fetching ${url}: ${err}`);
+      this.lastReading = undefined;
+      this.updateHomeKit(this.aqiInsteadOfDensity);
     }
   }
 
