@@ -1,7 +1,27 @@
 "use strict";
+var __createBinding = (this && this.__createBinding) || (Object.create ? (function(o, m, k, k2) {
+    if (k2 === undefined) k2 = k;
+    Object.defineProperty(o, k2, { enumerable: true, get: function() { return m[k]; } });
+}) : (function(o, m, k, k2) {
+    if (k2 === undefined) k2 = k;
+    o[k2] = m[k];
+}));
+var __setModuleDefault = (this && this.__setModuleDefault) || (Object.create ? (function(o, v) {
+    Object.defineProperty(o, "default", { enumerable: true, value: v });
+}) : function(o, v) {
+    o["default"] = v;
+});
+var __importStar = (this && this.__importStar) || function (mod) {
+    if (mod && mod.__esModule) return mod;
+    var result = {};
+    if (mod != null) for (var k in mod) if (k !== "default" && Object.prototype.hasOwnProperty.call(mod, k)) __createBinding(result, mod, k);
+    __setModuleDefault(result, mod);
+    return result;
+};
 var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
+const AxiosLogger = __importStar(require("axios-logger"));
 const axios_1 = __importDefault(require("axios"));
 const SensorReading_1 = require("./SensorReading");
 let hap;
@@ -53,17 +73,27 @@ class PurpleAirSensor {
     }
     update() {
         const url = 'https://www.purpleair.com/json';
+        const axiosInstance = axios_1.default.create();
+        axiosInstance.interceptors.request.use((request) => {
+            // write down your request intercept.
+            return AxiosLogger.requestLogger(request, {
+                logger: this.log
+            });
+        });
         if (this.lastReading !== undefined && this.lastReading.updateTimeMs > Date.now() - PurpleAirSensor.MIN_UPDATE_INTERVAL_MS) {
             this.log(`Skipping a fetch because the last update was ${Date.now() - this.lastReading.updateTimeMs} ms ago`);
         }
         else {
-            this.log(`Fetching ${url}`);
-            axios_1.default.get(url, {
+            this.log(`Fetching`);
+            axiosInstance.get(url, {
                 params: {
                     show: this.sensor,
                     key: this.key,
                 },
             }).then(resp => {
+                if (!resp.data.results[0]) {
+                    throw new Error('No sensor found');
+                }
                 this.lastReading = SensorReading_1.parsePurpleAirJson(resp.data, this.averages, this.conversion);
                 this.log(`Received new sensor reading ${this.lastReading}`);
                 this.updateHomeKit(this.aqiInsteadOfDensity);
