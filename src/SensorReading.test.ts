@@ -14,7 +14,7 @@ test('indoor sensor with VOC', () => {
 test('indoor sensor without VOC', () => {
   const reading = parsePurpleAirJson(testIndoorWithoutVocData);
   expect(reading.pm25).toBe(6.86);
-  expect(reading.voc).toBe(null)
+  expect(reading.voc).toBe(null);
 });
 
 
