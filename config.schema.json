@@ -17,7 +17,7 @@
         "required": true
       },
       "key": {
-        "title": "Key",
+        "title": "API key for private sensors",
         "type": "string",
         "required": false
       },
