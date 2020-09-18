@@ -16,6 +16,11 @@
         "type": "number",
         "required": true
       },
+      "key": {
+        "title": "API key for private sensors",
+        "type": "string",
+        "required": false
+      },
       "conversion" : {
         "title": "Conversions help accomodate different types of pollution with different particle densities",
         "type": "string",

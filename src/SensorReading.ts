@@ -11,7 +11,7 @@ export function parsePurpleAirJson(data, averages?: string, conversion?: string)
   })();
 
   const sensor = data.results[0].ID;
-  const voc = parseFloat(data.results[1].Voc);
+  const voc = data.results[1].Voc ? parseFloat(data.results[1].Voc) : null;
   return new SensorReading(sensor, pm25, voc, conv);
 }
 
@@ -28,7 +28,7 @@ export class SensorReading {
   constructor(
       public readonly sensor: string,
       public readonly pm25: number,
-      public readonly voc: number,
+      public readonly voc: number | null,
       public readonly conversion: string) {
     this.updateTimeMs = Date.now();
   }
