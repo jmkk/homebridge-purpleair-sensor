@@ -103,13 +103,13 @@ class PurpleAirSensor implements AccessoryPlugin {
     axiosInstance.interceptors.request.use((request) => {
       // write down your request intercept.
       return AxiosLogger.requestLogger(request, {
-        logger: this.log
+        logger: this.log,
       });
     });
 
     if (this.lastReading !== undefined && this.lastReading.updateTimeMs > Date.now() - PurpleAirSensor.MIN_UPDATE_INTERVAL_MS) {
       this.log(`Skipping a fetch because the last update was ${Date.now() - this.lastReading.updateTimeMs} ms ago`);
-      return
+      return;
     } 
 
     try {
@@ -118,14 +118,14 @@ class PurpleAirSensor implements AccessoryPlugin {
           show: this.sensor,
           key: this.key,
         },
-      })
+      });
 
       if (!resp.data.results[0]) {
-        throw new Error('No sensor found')
+        throw new Error(`No sensor found with ID ${this.sensor} and API key ${this.key}`);
       }
 
       this.lastReading = parsePurpleAirJson(resp.data, this.averages, this.conversion);
-      this.log(`Received new sensor reading ${this.lastReading}`);
+      this.log(`Received new sensor reading ${this.lastReading} for sensor ${this.sensor}`);
       this.updateHomeKit(this.aqiInsteadOfDensity);
     } catch(err) {
       this.logger.error(`Fetching ${url}: ${err}`);
