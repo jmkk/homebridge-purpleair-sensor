@@ -29,7 +29,6 @@ class PurpleAirSensor implements AccessoryPlugin {
   static readonly MIN_UPDATE_INTERVAL_MS = 30 * 1000;
 
   private readonly logger: Logging;
-  private readonly log: (message: string) => void;
   private readonly name: string;
   private readonly sensor: string;
   private readonly key?: string;
@@ -40,6 +39,7 @@ class PurpleAirSensor implements AccessoryPlugin {
   // Report AQI in the density field. See config.schema.json for the motivation.
   private readonly aqiInsteadOfDensity: boolean = false;
 
+  private readonly verboseLogging: boolean;
   private readonly updateIntervalMs: number;
   private readonly service: Service;
   private readonly informationService: Service;
@@ -51,6 +51,8 @@ class PurpleAirSensor implements AccessoryPlugin {
     this.key = config.key;
     this.name = config.name;
     this.service = new hap.Service.AirQualitySensor(this.name);
+
+    this.verboseLogging = config.verboseLogging;
 
     if (config.updateIntervalSecs) {
       this.updateIntervalMs = config.updateIntervalSecs * 1000;
@@ -64,13 +66,6 @@ class PurpleAirSensor implements AccessoryPlugin {
 
     // eslint-disable-next-line max-len
     this.logger.info(`Initializing PurpleAirSensor ${this.name} ${this.sensor} update every ${this.updateIntervalMs} ms using ${this.averages} averages and ${this.conversion} conversion`);
-
-    if (config.verboseLogging) {
-      this.log = (msg: string) => this.logger.info(msg);
-      this.logger.info('Use verbose logging');
-    } else {
-      this.log = (msg: string) => this.logger.debug(msg);
-    }
 
     this.service.getCharacteristic(hap.Characteristic.StatusActive)
       .on(CharacteristicEventTypes.GET, (callback: CharacteristicGetCallback) => {
@@ -92,6 +87,14 @@ class PurpleAirSensor implements AccessoryPlugin {
     }, this.updateIntervalMs);
 
     this.update();
+  }
+
+  private log(msg: string) {
+    const messageWithPrefix = `${this.name}: ${msg}`;
+
+    const logger = this.verboseLogging ? this.logger.info : this.logger.debug;
+
+    logger(messageWithPrefix);
   }
 
   async update() {
