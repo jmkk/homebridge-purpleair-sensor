@@ -1,7 +1,7 @@
 {
   "displayName": "Homebridge PurpleAir Sensor",
   "name": "homebridge-purpleair-sensor",
-  "version": "1.4.1",
+  "version": "1.5.0",
   "description": "Monitor air quality using PurpleAir.",
   "license": "Apache-2.0",
   "repository": {
@@ -32,7 +32,8 @@
     "purple air"
   ],
   "dependencies": {
-    "axios": "0.19.2"
+    "axios": "0.19.2",
+    "axios-logger": "^2.4.0"
   },
   "devDependencies": {
     "@types/jest": "^26.0.13",

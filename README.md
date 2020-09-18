@@ -9,17 +9,18 @@ but with a few changes:
 
 1. Support [homebridge-config-ui-x](https://www.npmjs.com/package/homebridge-config-ui-x)
    so the entire project can be configured in its UI.
-2. Support VOC sensor reading.
-3. Support different averages, from realtime data, all the way to 1 hour average.
-3. When the sensor is opened by HomeKit, this plugin will dynamically try to refresh the sensor values. However,
+2. Support private sensors.
+3. Support VOC sensor reading.
+4. Support different averages, from realtime data, all the way to 1 hour average.
+5. When the sensor is opened by HomeKit, this plugin will dynamically try to refresh the sensor values. However,
    it reuses the last updated value if it was fetched within 30 secs. This was done to prevent sending too many
    API requests to PurpleAir's servers. If the sensor is not opened by HomeKit, the plugin will update its value
    every 5 minutes by default.
-4. Allow reporting AQI value instead of PM2.5 density in HomeKit. The author is more used to reading AQI value,
+6. Allow reporting AQI value instead of PM2.5 density in HomeKit. The author is more used to reading AQI value,
    but HomeKit has only a field for PM2.5 density value. The plugin allows you to configure displaying AQI value
    in the density field.
-5. Work with multiple sensors.
-6. Rewritten in TypeScript, with some unit tests.
+7. Work with multiple sensors.
+8. Rewritten in TypeScript, with some unit tests.
 
 
 # Installation
@@ -96,6 +97,7 @@ sudo npm publish
 
 # Changelog
 
+- 1.5.0: Support private sensors.
 - 1.4.0: Add AQandU and LRAPA conversions.
 - 1.3.0: Added unit tests for parsing and ability to report averages in addition to realtime values.
 - 1.2.0: Verbose logging option.
