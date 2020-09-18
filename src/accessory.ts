@@ -1,4 +1,3 @@
-import * as AxiosLogger from 'axios-logger';
 import {
   AccessoryConfig,
   AccessoryPlugin,
@@ -101,10 +100,9 @@ class PurpleAirSensor implements AccessoryPlugin {
     const axiosInstance = axios.create();
 
     axiosInstance.interceptors.request.use((request) => {
-      // write down your request intercept.
-      return AxiosLogger.requestLogger(request, {
-        logger: this.log,
-      });
+      this.log(`Fetching url ${request.url} with params ${JSON.stringify(request.params)}`);
+
+      return request;
     });
 
     if (this.lastReading !== undefined && this.lastReading.updateTimeMs > Date.now() - PurpleAirSensor.MIN_UPDATE_INTERVAL_MS) {
