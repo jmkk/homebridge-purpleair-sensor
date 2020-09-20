@@ -68,6 +68,7 @@ You can set the following fields:
 - `accessory` (required): must be `PurpleAirSensor`
 - `sensor` (required): the sensor number. Find the sensor number by going to <a href='https://www.purpleair.com/map'>PurpleAir's map</a> -> click on a sensor -> Look at the URL. It's the number right after 'select='.
 - `name` (required): name of the sensor.
+- `key` (optional): API key for private sensors.
 - `conversion` (optional): Conversions help accomodate different types of pollution with different particle densities. Supports the following values:
     - `None` (default)
     - `AQandU`
@@ -97,6 +98,7 @@ sudo npm publish
 
 # Changelog
 
+- 1.5.1: Fix logging.
 - 1.5.0: Support private sensors.
 - 1.4.0: Add AQandU and LRAPA conversions.
 - 1.3.0: Added unit tests for parsing and ability to report averages in addition to realtime values.
