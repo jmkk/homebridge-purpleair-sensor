@@ -1,4 +1,3 @@
-import * as AxiosLogger from 'axios-logger';
 import {
   AccessoryConfig,
   AccessoryPlugin,
@@ -30,7 +29,6 @@ class PurpleAirSensor implements AccessoryPlugin {
   static readonly MIN_UPDATE_INTERVAL_MS = 30 * 1000;
 
   private readonly logger: Logging;
-  private readonly log: (message: string) => void;
   private readonly name: string;
   private readonly sensor: string;
   private readonly key?: string;
@@ -41,6 +39,7 @@ class PurpleAirSensor implements AccessoryPlugin {
   // Report AQI in the density field. See config.schema.json for the motivation.
   private readonly aqiInsteadOfDensity: boolean = false;
 
+  private readonly verboseLogging: boolean;
   private readonly updateIntervalMs: number;
   private readonly service: Service;
   private readonly informationService: Service;
@@ -52,6 +51,8 @@ class PurpleAirSensor implements AccessoryPlugin {
     this.key = config.key;
     this.name = config.name;
     this.service = new hap.Service.AirQualitySensor(this.name);
+
+    this.verboseLogging = config.verboseLogging;
 
     if (config.updateIntervalSecs) {
       this.updateIntervalMs = config.updateIntervalSecs * 1000;
@@ -65,13 +66,6 @@ class PurpleAirSensor implements AccessoryPlugin {
 
     // eslint-disable-next-line max-len
     this.logger.info(`Initializing PurpleAirSensor ${this.name} ${this.sensor} update every ${this.updateIntervalMs} ms using ${this.averages} averages and ${this.conversion} conversion`);
-
-    if (config.verboseLogging) {
-      this.log = (msg: string) => this.logger.info(msg);
-      this.logger.info('Use verbose logging');
-    } else {
-      this.log = (msg: string) => this.logger.debug(msg);
-    }
 
     this.service.getCharacteristic(hap.Characteristic.StatusActive)
       .on(CharacteristicEventTypes.GET, (callback: CharacteristicGetCallback) => {
@@ -95,22 +89,27 @@ class PurpleAirSensor implements AccessoryPlugin {
     this.update();
   }
 
+  private log(msg: string) {
+    if (this.verboseLogging) {
+      this.logger.info(msg);
+    } else {
+      this.logger.debug(msg);
+    }
+  }
+
   async update() {
     const url = 'https://www.purpleair.com/json';
-
     const axiosInstance = axios.create();
 
     axiosInstance.interceptors.request.use((request) => {
-      // write down your request intercept.
-      return AxiosLogger.requestLogger(request, {
-        logger: this.log,
-      });
+      this.log(`Fetching url ${request.url} with params ${JSON.stringify(request.params)}`);
+      return request;
     });
 
     if (this.lastReading !== undefined && this.lastReading.updateTimeMs > Date.now() - PurpleAirSensor.MIN_UPDATE_INTERVAL_MS) {
       this.log(`Skipping a fetch because the last update was ${Date.now() - this.lastReading.updateTimeMs} ms ago`);
       return;
-    } 
+    }
 
     try {
       const resp = await axiosInstance.get(url, {
