@@ -90,28 +90,26 @@ class PurpleAirSensor implements AccessoryPlugin {
   }
 
   private log(msg: string) {
-    const messageWithPrefix = `${this.name}: ${msg}`;
-
-    const logger = this.verboseLogging ? this.logger.info : this.logger.debug;
-
-    logger(messageWithPrefix);
+    if (this.verboseLogging) {
+      this.logger.info(msg);
+    } else {
+      this.logger.debug(msg);
+    }
   }
 
   async update() {
     const url = 'https://www.purpleair.com/json';
-
     const axiosInstance = axios.create();
 
     axiosInstance.interceptors.request.use((request) => {
       this.log(`Fetching url ${request.url} with params ${JSON.stringify(request.params)}`);
-
       return request;
     });
 
     if (this.lastReading !== undefined && this.lastReading.updateTimeMs > Date.now() - PurpleAirSensor.MIN_UPDATE_INTERVAL_MS) {
       this.log(`Skipping a fetch because the last update was ${Date.now() - this.lastReading.updateTimeMs} ms ago`);
       return;
-    } 
+    }
 
     try {
       const resp = await axiosInstance.get(url, {
