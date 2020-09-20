@@ -168,12 +168,6 @@ class PurpleAirSensor implements AccessoryPlugin {
       if (this.lastReading.voc) {
         this.service.setCharacteristic(hap.Characteristic.VOCDensity, this.lastReading.voc);
       }
-
-      this.service.setCharacteristic(hap.Characteristic.StatusActive, this.lastReadingActive);
-      this.service.setCharacteristic(hap.Characteristic.StatusFault, 0);
-    } else {
-      this.service.setCharacteristic(hap.Characteristic.StatusActive, false);
-      this.service.setCharacteristic(hap.Characteristic.StatusFault, 1);
     }
   }
 }
