@@ -73,7 +73,8 @@ You can set the following fields:
     - `None` (default)
     - `AQandU`
     - `LRAPA`
-- `averages` (optional, default realtime): sensor reading averages. Supports the following values:
+    - `EPA`
+- `averages` (optional, default realtime): sensor reading averages, only used with `None` and `AQandU` conversions. Supports the following values:
     - `realtime`
     - `10m`: 10 Minute Average
     - `30m`: 30 Minute Average
