@@ -98,8 +98,7 @@ sudo npm publish
 
 
 # Changelog
-- 1.6.1: Add homebridge-config-ui-x support for EPA conversion.
-- 1.6.0: Support EPA conversion.
+- 1.6.2: Support EPA conversion.
 - 1.5.0: Support private sensors.
 - 1.4.0: Add AQandU and LRAPA conversions.
 - 1.3.0: Added unit tests for parsing and ability to report averages in addition to realtime values.
