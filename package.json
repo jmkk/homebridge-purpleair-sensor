@@ -1,7 +1,7 @@
 {
   "displayName": "Homebridge PurpleAir Sensor",
   "name": "homebridge-purpleair-sensor",
-  "version": "1.5.2",
+  "version": "1.6.0",
   "description": "Monitor air quality using PurpleAir.",
   "license": "Apache-2.0",
   "repository": {

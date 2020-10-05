@@ -99,8 +99,7 @@ sudo npm publish
 
 # Changelog
 
-- 1.5.2: Simplify error handling.
-- 1.5.1: Fix logging.
+- 1.6.0: Support EPA conversion.
 - 1.5.0: Support private sensors.
 - 1.4.0: Add AQandU and LRAPA conversions.
 - 1.3.0: Added unit tests for parsing and ability to report averages in addition to realtime values.
