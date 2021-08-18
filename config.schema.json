@@ -30,7 +30,8 @@
           { "title": "None", "enum": ["None"] },
           { "title": "EPA", "enum": ["EPA"] },
           { "title": "AQandU", "enum": ["AQandU"] },
-          { "title": "LRAPA", "enum": ["LRAPA"] }
+          { "title": "LRAPA", "enum": ["LRAPA"] },
+          { "title": "WOODSMOKE", "enum": ["WOODSMOKE"] }
         ]
       },
       "averages": {

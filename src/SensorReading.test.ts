@@ -5,6 +5,7 @@ import testIndoorWithoutVocData from './test-indoor-without-voc.json';
 import testOutdoorData from './test-outdoor.json';
 import nearbyData from './test-62393.json';
 import nearbyData2 from './test-67533.json';
+import nearbyData3 from './test-68495.json';
 
 test('indoor sensor with VOC', () => {
   const reading = parsePurpleAirJson(testIndoorData);
@@ -52,7 +53,7 @@ test('AQI excellent', () => {
 });
 
 test('AQI good', () => {
-  const reading = new SensorReading('1234', 13.1, NaN, NaN, NaN,  'None');
+  const reading = new SensorReading('1234', 13.1, NaN, NaN, NaN, 'None');
   expect(Math.round(reading.aqi)).toBe(53);
   expect(reading.airQualityHomekitReading).toBe(2);
 });
@@ -158,4 +159,16 @@ test('Nearby 58 LRAPA', () => {
   expect(reading.pm25).toBe(30.69);
   expect(reading.aqi).toBe(58);
   expect(reading.airQualityHomekitReading).toBe(2);
+});
+
+test('Nearby 25 Woodsmoke', () => {
+  const reading = parsePurpleAirJson(nearbyData3, 'realtime', 'WOODSMOKE');
+  expect(reading.pm25).toBe(10.16);
+  expect(reading.aqi).toBe(25);
+});
+
+test('Nearby 29 EPA', () => {
+  const reading = parsePurpleAirJson(nearbyData3, 'realtime', 'EPA');
+  expect(reading.pm25).toBe(10.16);
+  expect(reading.aqi).toBe(29);
 });
