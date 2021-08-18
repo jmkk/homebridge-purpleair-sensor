@@ -74,6 +74,7 @@ You can set the following fields:
     - `AQandU`
     - `LRAPA`
     - `EPA`
+    - `WOODSMOKE`
 - `averages` (optional, default realtime): sensor reading averages, only used with `None` and `AQandU` conversions. Supports the following values:
     - `realtime`
     - `10m`: 10 Minute Average
