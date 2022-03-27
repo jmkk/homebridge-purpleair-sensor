@@ -32,7 +32,7 @@
     "purple air"
   ],
   "dependencies": {
-    "axios": "0.19.2",
+    "axios": "0.21.2",
     "axios-logger": "^2.4.0"
   },
   "devDependencies": {
