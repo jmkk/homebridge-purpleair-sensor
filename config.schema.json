@@ -16,6 +16,11 @@
         "type": "number",
         "required": true
       },
+      "localIPAddress": {
+        "title": "Local IP address of the sensor, if using it directly on the local network",
+        "type": "string",
+        "required": false
+      },
       "key": {
         "title": "API key for private sensors",
         "type": "string",
@@ -35,7 +40,7 @@
         ]
       },
       "averages": {
-        "title": "Reading Averages (default = realtime)",
+        "title": "Reading Averages (default = realtime). Note that when using localIPAddress this config is ignored and always uses 2m average.",
         "type": "string",
         "oneOf": [
           { "title": "Show Realtime", "enum": ["realtime"] },
