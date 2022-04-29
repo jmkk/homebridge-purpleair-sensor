@@ -6,6 +6,8 @@ import testOutdoorData from './test-outdoor.json';
 import nearbyData from './test-62393.json';
 import nearbyData2 from './test-67533.json';
 import nearbyData3 from './test-68495.json';
+import testLocalInside from './test-local-inside.json';
+import testLocalOutside from './test-local-outside.json';
 
 test('indoor sensor with VOC', () => {
   const reading = parsePurpleAirJson(testIndoorData);
@@ -171,4 +173,16 @@ test('Nearby 29 EPA', () => {
   const reading = parsePurpleAirJson(nearbyData3, 'realtime', 'EPA');
   expect(reading.pm25).toBe(10.16);
   expect(reading.aqi).toBe(29);
+});
+
+test('local inside sensor', () => {
+  const reading = parsePurpleAirJson(testLocalInside, 'realtime', 'None', true);
+  expect(reading.aqi).toBe(28);
+  expect(reading.pm25).toBe(6.67);
+});
+
+test('local outside sensor', () => {
+  const reading = parsePurpleAirJson(testLocalOutside, 'realtime', 'None', true);
+  expect(reading.aqi).toBe(9);
+  expect(reading.pm25).toBe(2.16);
 });

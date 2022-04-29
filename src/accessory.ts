@@ -32,6 +32,7 @@ class PurpleAirSensor implements AccessoryPlugin {
   private readonly name: string;
   private readonly sensor: string;
   private readonly key?: string;
+  private readonly localIPAddress?: string;
 
   private readonly averages: string;
   private readonly conversion: string;
@@ -50,6 +51,7 @@ class PurpleAirSensor implements AccessoryPlugin {
     this.sensor = config.sensor;
     this.key = config.key;
     this.name = config.name;
+    this.localIPAddress = config.localIPAddress;
     this.service = new hap.Service.AirQualitySensor(this.name);
 
     this.verboseLogging = config.verboseLogging;
@@ -83,7 +85,7 @@ class PurpleAirSensor implements AccessoryPlugin {
       .setCharacteristic(hap.Characteristic.SerialNumber, this.sensor);
 
     setInterval(() => {
-      this.update(); 
+      this.update();
     }, this.updateIntervalMs);
 
     this.update();
@@ -98,8 +100,14 @@ class PurpleAirSensor implements AccessoryPlugin {
   }
 
   async update() {
-    const url = 'https://www.purpleair.com/json';
+    var url = 'https://www.purpleair.com/json';
+    var usesLocalSensor = false
     const axiosInstance = axios.create();
+
+    if (this.localIPAddress !== undefined) {
+      url = 'http://' + this.localIPAddress + '/json'
+      usesLocalSensor = true
+    }
 
     axiosInstance.interceptors.request.use((request) => {
       this.log(`Fetching url ${request.url} with params ${JSON.stringify(request.params)}`);
@@ -119,11 +127,11 @@ class PurpleAirSensor implements AccessoryPlugin {
         },
       });
 
-      if (!resp.data.results[0]) {
+      if (!usesLocalSensor && !resp.data.results[0]) {
         throw new Error(`No sensor found with ID ${this.sensor} and API key ${this.key}`);
       }
 
-      this.lastReading = parsePurpleAirJson(resp.data, this.averages, this.conversion);
+      this.lastReading = parsePurpleAirJson(resp.data, this.averages, this.conversion, usesLocalSensor);
       this.log(`Received new sensor reading ${this.lastReading} for sensor ${this.sensor}`);
       this.updateHomeKit(this.aqiInsteadOfDensity);
     } catch(err) {
@@ -164,7 +172,7 @@ class PurpleAirSensor implements AccessoryPlugin {
       } else {
         this.service.setCharacteristic(hap.Characteristic.PM2_5Density, this.lastReading.pm25);
       }
-      
+
       if (this.lastReading.voc) {
         this.service.setCharacteristic(hap.Characteristic.VOCDensity, this.lastReading.voc);
       }

@@ -1,5 +1,13 @@
 
-export function parsePurpleAirJson(data, averages?: string, conversion?: string) {
+export function parsePurpleAirJson(data, averages?: string, conversion?: string, usesLocalSensor = false) {
+  if (usesLocalSensor) {
+    return parseLocalPurpleAirJson(data, averages, conversion);
+  } else {
+    return parseRemotePurpleAirJson(data, averages, conversion);
+  }
+}
+
+function parseRemotePurpleAirJson(data, averages?: string, conversion?: string) {
   const conv = conversion ?? 'None';
   const pm25 = (() => {
     switch (averages) {
@@ -14,6 +22,15 @@ export function parsePurpleAirJson(data, averages?: string, conversion?: string)
   const sensor = data.results[0].ID;
   const voc = data.results[1].Voc ? parseFloat(data.results[1].Voc) : null;
   return new SensorReading(sensor, pm25, pm25Cf1, humidity, voc, conv);
+}
+
+function parseLocalPurpleAirJson(data, averages?: string, conversion?: string) {
+  const conv = conversion ?? 'None';
+  const pm25 = parseFloat(data.pm2_5_atm);
+  const pm25Cf1 = parseFloat(data.pm2_5_cf_1);
+  const humidity = parseFloat(data.current_humidity);
+  const sensor = data.Id;
+  return new SensorReading(sensor, pm25, pm25Cf1, humidity, null, conv);
 }
 
 export class SensorReading {
@@ -97,17 +114,19 @@ export class SensorReading {
     // note that this calculation at PurpleAir seems wrong, their PM2.5 values are from CF=ATM (atmo) rather than CF=1 (standard particles)
     return this.pmToAQI(0.5 * paCf1 - 0.66);
   }
-  
+
   static pmToEPA(paCf1: number, humidity: number): number {
     // formula found on https://www.purpleair.com/map, shown when you hover on the `?` next to `Conversion`
     // 0-250 ug/m3 range (>250 may underestimate true PM2.5):
     // PM2.5 (µg/m³) = 0.534 x PA(cf_1) - 0.0844 x RH + 5.604
+    // eslint-disable-next-line max-len
     // more at https://cfpub.epa.gov/si/si_public_record_report.cfm?dirEntryId=349513&Lab=CEMM&simplesearch=0&showcriteria=2&sortby=pubDate&timstype=&datebeginpublishedpresented=08/25/2018
     return this.pmToAQI(0.534 * paCf1 - 0.0844 * humidity + 5.604);
   }
 
   static pmToWoodsmoke(paCf1: number): number {
     // formula found on https://www.purpleair.com/map, shown when you hover on the `?` next to `Conversion`
+    // eslint-disable-next-line max-len
     // From a study in Australia comparing Purple Air with NSW Government TEOM PM2.5 and Armidale Regional Council's DustTrak measurements - see published peer-reviewed study - https://www.mdpi.com/2073-4433/11/8/856/htm.
     // Woodsmoke PM2.5 (µg/m³) = 0.55 x PA (PM2.5 CF=1) + 0.53
     return this.pmToAQI(0.55 * paCf1 + 0.53);
