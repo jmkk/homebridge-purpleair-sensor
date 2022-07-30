@@ -1,15 +1,15 @@
 {
   "displayName": "Homebridge PurpleAir Sensor",
   "name": "homebridge-purpleair-sensor",
-  "version": "1.6.2",
+  "version": "1.7.0",
   "description": "Monitor air quality using PurpleAir.",
   "license": "Apache-2.0",
   "repository": {
     "type": "git",
-    "url": "git://github.com/rxin/homebridge-purpleair-sensor.git"
+    "url": "git://github.com/jmkk/homebridge-purpleair-sensor.git"
   },
   "bugs": {
-    "url": "https://github.com/rxin/homebridge-purpleair-sensor/issues"
+    "url": "https://github.com/jmkk/homebridge-purpleair-sensor/issues"
   },
   "engines": {
     "node": ">=10.17.0",
