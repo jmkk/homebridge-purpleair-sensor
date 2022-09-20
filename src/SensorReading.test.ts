@@ -131,7 +131,7 @@ test('Nearby 158 AQandU', () => {
 test('Nearby 156 LRAPA', () => {
   const reading = parsePurpleAirJson(nearbyData, 'realtime', 'LRAPA');
   expect(reading.pm25).toBe(8.7);
-  expect(reading.aqi).toBe(0);
+  expect(reading.aqi).toBe(15);
   expect(reading.airQualityHomekitReading).toBe(1);
 });
 
@@ -159,20 +159,20 @@ test('Nearby 81 AQandU', () => {
 test('Nearby 58 LRAPA', () => {
   const reading = parsePurpleAirJson(nearbyData2, 'realtime', 'LRAPA');
   expect(reading.pm25).toBe(3.3);
-  expect(reading.aqi).toBe(0);
+  expect(reading.aqi).toBe(4);
   expect(reading.airQualityHomekitReading).toBe(1);
 });
 
 test('Nearby 25 Woodsmoke', () => {
   const reading = parsePurpleAirJson(nearbyData3, 'realtime', 'WOODSMOKE');
   expect(reading.pm25).toBe(2.2);
-  expect(reading.aqi).toBe(0);
+  expect(reading.aqi).toBe(7);
 });
 
 test('Nearby 29 EPA', () => {
   const reading = parsePurpleAirJson(nearbyData3, 'realtime', 'EPA');
   expect(reading.pm25).toBe(2.2);
-  expect(reading.aqi).toBe(0);
+  expect(reading.aqi).toBe(14);
 });
 
 test('local inside sensor', () => {
