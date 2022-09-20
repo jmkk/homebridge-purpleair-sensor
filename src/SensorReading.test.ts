@@ -11,41 +11,41 @@ import testLocalOutside from './test-local-outside.json';
 
 test('indoor sensor with VOC', () => {
   const reading = parsePurpleAirJson(testIndoorData);
-  expect(reading.pm25).toBe(6.86);
+  expect(reading.pm25).toBe(10.7);
   expect(reading.voc).toBe(81.0);
 });
 
 test('indoor sensor without VOC', () => {
   const reading = parsePurpleAirJson(testIndoorWithoutVocData);
-  expect(reading.pm25).toBe(6.86);
+  expect(reading.pm25).toBe(10.7);
   expect(reading.voc).toBe(null);
 });
 
 
 test('outdoor sensor', () => {
   const reading = parsePurpleAirJson(testOutdoorData);
-  expect(reading.pm25).toBe(46.96);
-  expect(reading.voc).toBe(null);
+  expect(reading.pm25).toBe(9.7);
+  expect(reading.voc).toBe(110.6);
 });
 
 test('10m averages', () => {
   const reading = parsePurpleAirJson(testIndoorData, '10m');
-  expect(reading.pm25).toBe(6.83);
+  expect(reading.pm25).toBe(11.1);
 });
 
 test('30m averages', () => {
   const reading = parsePurpleAirJson(testIndoorData, '30m');
-  expect(reading.pm25).toBe(7.61);
+  expect(reading.pm25).toBe(13.0);
 });
 
 test('60m averages', () => {
   const reading = parsePurpleAirJson(testIndoorData, '60m');
-  expect(reading.pm25).toBe(9.37);
+  expect(reading.pm25).toBe(15.0);
 });
 
 test('default to no conversion', () => {
   const reading = parsePurpleAirJson(testIndoorData);
-  expect(Math.round(reading.aqi)).toBe(29);
+  expect(Math.round(reading.aqi)).toBe(45);
 });
 
 test('AQI excellent', () => {
@@ -114,65 +114,65 @@ test('AQandU poor', () => {
   expect(reading.airQualityHomekitReading).toBe(5);
 });
 
-test('Nearby 167 None', () => {
+test('Nearby 36 None', () => {
   const reading = parsePurpleAirJson(nearbyData, 'realtime', 'None');
-  expect(reading.pm25).toBe(86.47);
-  expect(reading.aqi).toBe(167);
-  expect(reading.airQualityHomekitReading).toBe(4);
+  expect(reading.pm25).toBe(8.7);
+  expect(reading.aqi).toBe(36);
+  expect(reading.airQualityHomekitReading).toBe(1);
 });
 
 test('Nearby 158 AQandU', () => {
   const reading = parsePurpleAirJson(nearbyData, 'realtime', 'AQandU');
-  expect(reading.pm25).toBe(86.47);
-  expect(reading.aqi).toBe(158);
-  expect(reading.airQualityHomekitReading).toBe(4);
+  expect(reading.pm25).toBe(8.7);
+  expect(reading.aqi).toBe(39);
+  expect(reading.airQualityHomekitReading).toBe(1);
 });
 
 test('Nearby 156 LRAPA', () => {
   const reading = parsePurpleAirJson(nearbyData, 'realtime', 'LRAPA');
-  expect(reading.pm25).toBe(86.47);
-  expect(reading.aqi).toBe(156);
-  expect(reading.airQualityHomekitReading).toBe(4);
+  expect(reading.pm25).toBe(8.7);
+  expect(reading.aqi).toBe(0);
+  expect(reading.airQualityHomekitReading).toBe(1);
 });
 
 test('Nearby 90 None', () => {
   const reading = parsePurpleAirJson(nearbyData2, 'realtime', 'None');
-  expect(reading.pm25).toBe(30.69);
-  expect(reading.aqi).toBe(90);
-  expect(reading.airQualityHomekitReading).toBe(2);
+  expect(reading.pm25).toBe(3.3);
+  expect(reading.aqi).toBe(14);
+  expect(reading.airQualityHomekitReading).toBe(1);
 });
 
 test('Nearby 81 EPA', () => {
   const reading = parsePurpleAirJson(nearbyData2, 'realtime', 'AQandU');
-  expect(reading.pm25).toBe(30.69);
-  expect(reading.aqi).toBe(81);
-  expect(reading.airQualityHomekitReading).toBe(2);
+  expect(reading.pm25).toBe(3.3);
+  expect(reading.aqi).toBe(22);
+  expect(reading.airQualityHomekitReading).toBe(1);
 });
 
 test('Nearby 81 AQandU', () => {
   const reading = parsePurpleAirJson(nearbyData2, 'realtime', 'AQandU');
-  expect(reading.pm25).toBe(30.69);
-  expect(reading.aqi).toBe(81);
-  expect(reading.airQualityHomekitReading).toBe(2);
+  expect(reading.pm25).toBe(3.3);
+  expect(reading.aqi).toBe(22);
+  expect(reading.airQualityHomekitReading).toBe(1);
 });
 
 test('Nearby 58 LRAPA', () => {
   const reading = parsePurpleAirJson(nearbyData2, 'realtime', 'LRAPA');
-  expect(reading.pm25).toBe(30.69);
-  expect(reading.aqi).toBe(58);
-  expect(reading.airQualityHomekitReading).toBe(2);
+  expect(reading.pm25).toBe(3.3);
+  expect(reading.aqi).toBe(0);
+  expect(reading.airQualityHomekitReading).toBe(1);
 });
 
 test('Nearby 25 Woodsmoke', () => {
   const reading = parsePurpleAirJson(nearbyData3, 'realtime', 'WOODSMOKE');
-  expect(reading.pm25).toBe(10.16);
-  expect(reading.aqi).toBe(25);
+  expect(reading.pm25).toBe(2.2);
+  expect(reading.aqi).toBe(0);
 });
 
 test('Nearby 29 EPA', () => {
   const reading = parsePurpleAirJson(nearbyData3, 'realtime', 'EPA');
-  expect(reading.pm25).toBe(10.16);
-  expect(reading.aqi).toBe(29);
+  expect(reading.pm25).toBe(2.2);
+  expect(reading.aqi).toBe(0);
 });
 
 test('local inside sensor', () => {

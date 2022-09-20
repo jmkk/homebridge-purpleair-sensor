@@ -12,6 +12,7 @@ import {
 import axios from 'axios';
 
 import { parsePurpleAirJson, SensorReading } from './SensorReading';
+import { request } from 'http';
 
 let hap: HAP;
 
@@ -31,6 +32,7 @@ class PurpleAirSensor implements AccessoryPlugin {
   private readonly logger: Logging;
   private readonly name: string;
   private readonly sensor: string;
+  private readonly apiReadKey?: string;
   private readonly key?: string;
   private readonly localIPAddress?: string;
 
@@ -52,6 +54,7 @@ class PurpleAirSensor implements AccessoryPlugin {
     this.key = config.key;
     this.name = config.name;
     this.localIPAddress = config.localIPAddress;
+    this.apiReadKey = config.apiReadKey;
     this.service = new hap.Service.AirQualitySensor(this.name);
 
     this.verboseLogging = config.verboseLogging;
@@ -100,13 +103,19 @@ class PurpleAirSensor implements AccessoryPlugin {
   }
 
   async update() {
-    let url = 'https://www.purpleair.com/json';
+    let url = 'https://api.purpleair.com/v1/sensors';
     let usesLocalSensor = false;
     const axiosInstance = axios.create();
 
     if (this.localIPAddress !== undefined) {
       url = 'http://' + this.localIPAddress + '/json';
       usesLocalSensor = true;
+    } else {
+      url += '/' + this.sensor;
+
+      if (this.apiReadKey !== undefined) {
+        axiosInstance.defaults.headers.common['X-API-Key'] = this.apiReadKey;
+      }
     }
 
     axiosInstance.interceptors.request.use((request) => {
@@ -120,14 +129,15 @@ class PurpleAirSensor implements AccessoryPlugin {
     }
 
     try {
-      const resp = await axiosInstance.get(url, {
+      const request_config = {
         params: {
-          show: this.sensor,
-          key: this.key,
+          read_key: this.key,
         },
-      });
+      };
 
-      if (!usesLocalSensor && !resp.data.results[0]) {
+      const resp = await axiosInstance.get(url, request_config);
+
+      if (!usesLocalSensor && resp.data.sensor === undefined) {
         throw new Error(`No sensor found with ID ${this.sensor} and API key ${this.key}`);
       }
 
