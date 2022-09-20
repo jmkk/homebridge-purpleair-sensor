@@ -1,4 +1,3 @@
-
 export function parsePurpleAirJson(data, averages?: string, conversion?: string, usesLocalSensor = false) {
   if (usesLocalSensor) {
     return parseLocalPurpleAirJson(data, averages, conversion);
@@ -8,19 +7,21 @@ export function parsePurpleAirJson(data, averages?: string, conversion?: string,
 }
 
 function parseRemotePurpleAirJson(data, averages?: string, conversion?: string) {
+  const sensor_data = data.sensor;
+  const sensor_stats = sensor_data.stats;
   const conv = conversion ?? 'None';
   const pm25 = (() => {
     switch (averages) {
-      case '10m': return JSON.parse(data.results[0].Stats).v1;
-      case '30m': return JSON.parse(data.results[0].Stats).v2;
-      case '60m': return JSON.parse(data.results[0].Stats).v3;
-      default: return parseFloat(data.results[0].PM2_5Value);
+      case '10m': return sensor_stats['pm2.5_10minute'];
+      case '30m': return sensor_stats['pm2.5_30minute'];
+      case '60m': return sensor_stats['pm2.5_60minute'];
+      default: return parseFloat(sensor_data['pm2.5']);
     }
   })();
-  const pm25Cf1 = parseFloat(data.results[0].pm2_5_cf_1);
-  const humidity = parseFloat(data.results[0].humidity);
-  const sensor = data.results[0].ID;
-  const voc = data.results[1].Voc ? parseFloat(data.results[1].Voc) : null;
+  const pm25Cf1 = parseFloat(sensor_data['pm2.5_cf_1']);
+  const humidity = parseFloat(sensor_data.humidity);
+  const sensor = sensor_data.sensor_index;
+  const voc = sensor_data.voc ? parseFloat(sensor_data.voc) : null;
   return new SensorReading(sensor, pm25, pm25Cf1, humidity, voc, conv);
 }
 
@@ -57,7 +58,7 @@ export class SensorReading {
 
   public toString = () : string => {
     return `SensorReading(AQI=${this.aqi.toFixed(0)}, PM25=${this.pm25}u/m3, PM25_CF1=${this.pm25Cf1}u/m3, Humidity=${this.humidity}, VOC=${this.voc})`;
-  }
+  };
 
   get aqi(): number {
     switch (this.conversion) {

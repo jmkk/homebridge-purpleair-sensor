@@ -69,6 +69,7 @@ You can set the following fields:
 - `sensor` (required): the sensor number. Find the sensor number by going to <a href='https://www.purpleair.com/map'>PurpleAir's map</a> -> click on a sensor -> Look at the URL. It's the number right after 'select='.
 - `name` (required): name of the sensor.
 - `localIPAddress` (optional): Local IP address of the sensor, if using it directly on the local network
+- `apiReadKey` (optional): This is your API read key for using purpleair.com API - request one from contact@purpleair.com. It's not required when using local IP address above.
 - `key` (optional): API key for private sensors.
 - `conversion` (optional): Conversions help accomodate different types of pollution with different particle densities. Supports the following values:
     - `None` (default)
@@ -100,6 +101,7 @@ sudo npm publish
 
 
 # Changelog
+- 2.0.0: Use the new PurpleAir.com API for remote sensors. Note: you need to get your read API key from PurpleAir to use the new API, or you can choose to use local sensors without the API key.
 - 1.7.0: Support for direct access to local sensors
 - 1.6.2: Support EPA conversion.
 - 1.5.0: Support private sensors.

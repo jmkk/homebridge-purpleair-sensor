@@ -2,7 +2,7 @@
   "pluginAlias": "PurpleAirSensor",
   "pluginType": "accessory",
   "singular": false,
-  "headerDisplay": "Find the sensor number by going to <a href='https://www.purpleair.com/map'>PurpleAir's map</a> -> click on a sensor -> 'Get This Widget' -> 'JSON' and look at the URL. It's the number right after 'show'.",
+  "headerDisplay": "Find the sensor ID by going to <a href='https://www.purpleair.com/map'>PurpleAir's map</a> -> click on a sensor, and look at the URL. It's the number right after 'select='.\nTo obtain the API read key, reach out to contact@purpleair.com. For private sensors, check the map's URL for the 'key=' string.",
   "schema": {
     "type": "object",
     "properties": {
@@ -12,7 +12,7 @@
         "required": true
       },
       "sensor": {
-        "title": "Sensor Number",
+        "title": "Sensor ID",
         "type": "number",
         "required": true
       },
@@ -21,8 +21,13 @@
         "type": "string",
         "required": false
       },
+      "apiReadKey": {
+        "title": "API read key, required when local IP address above is not set",
+        "type": "string",
+        "required": false
+      },
       "key": {
-        "title": "API key for private sensors",
+        "title": "Key for private sensors",
         "type": "string",
         "required": false
       },
