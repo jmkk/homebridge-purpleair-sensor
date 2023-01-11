@@ -103,6 +103,8 @@ sudo npm publish
 
 
 # Changelog
+- 2.0.2: Verbose network error logging.
+- 2.0.1: Refreshing dependencies, now requiring node >= 14.8.1
 - 2.0.0: Use the new PurpleAir.com API for remote sensors. Note: you need to get your read API key from PurpleAir to use the new API, or you can choose to use local sensors without the API key.
 - 1.7.0: Support for direct access to local sensors
 - 1.6.2: Support EPA conversion.

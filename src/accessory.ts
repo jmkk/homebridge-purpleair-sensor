@@ -9,7 +9,7 @@ import {
   Service,
 } from 'homebridge';
 
-import axios from 'axios';
+import axios, { AxiosError } from 'axios';
 
 import { parsePurpleAirJson, SensorReading } from './SensorReading';
 import { request } from 'http';
@@ -144,8 +144,12 @@ class PurpleAirSensor implements AccessoryPlugin {
       this.lastReading = parsePurpleAirJson(resp.data, this.averages, this.conversion, usesLocalSensor);
       this.log(`Received new sensor reading ${this.lastReading} for sensor ${this.sensor}`);
       this.updateHomeKit(this.aqiInsteadOfDensity);
-    } catch(err) {
-      this.logger.error(`Fetching ${url}: ${err}`);
+    } catch (err) {
+      if (err instanceof AxiosError && err.response) {
+        this.logger.error(`Error fetching ${url}: ${JSON.stringify(err.response.data)}`);
+      } else {
+        this.logger.error(`Error fetching ${url}: ${err}`);
+      }
       this.lastReading = undefined;
       this.updateHomeKit(this.aqiInsteadOfDensity);
     }
