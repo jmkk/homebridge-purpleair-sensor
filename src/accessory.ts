@@ -132,6 +132,7 @@ class PurpleAirSensor implements AccessoryPlugin {
       const request_config = {
         params: {
           read_key: this.key,
+          fields: 'humidity,voc,pm2.5,pm2.5_cf_1,pm2.5_10minute,pm2.5_30minute,pm2.5_60minute',
         },
       };
 
