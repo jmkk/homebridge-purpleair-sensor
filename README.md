@@ -103,6 +103,7 @@ sudo npm publish
 
 
 # Changelog
+- 2.1.0: Only fetch API fields needed for the core functionality of the plugin.
 - 2.0.2: Verbose network error logging.
 - 2.0.1: Refreshing dependencies, now requiring node >= 14.8.1
 - 2.0.0: Use the new PurpleAir.com API for remote sensors. Note: you need to get your read API key from PurpleAir to use the new API, or you can choose to use local sensors without the API key.
