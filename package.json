@@ -1,7 +1,8 @@
 {
+  "private": true,
   "displayName": "Homebridge PurpleAir Sensor",
   "name": "homebridge-purpleair-sensor",
-  "version": "2.1.0",
+  "version": "3.0.0",
   "description": "Monitor air quality using PurpleAir.",
   "license": "Apache-2.0",
   "repository": {
@@ -12,12 +13,12 @@
     "url": "https://github.com/jmkk/homebridge-purpleair-sensor/issues"
   },
   "engines": {
-    "node": ">=14.18.1",
-    "homebridge": ">0.4.53"
+    "node": "^18.17.0 || ^20.9.0",
+    "homebridge": "^1.6.0"
   },
-  "main": "dist/accessory.js",
+  "main": "dist/main.js",
   "scripts": {
-    "lint": "eslint src/**.ts",
+    "lint": "eslint src/**.ts --max-warnings=0",
     "watch": "npm run build && npm link && nodemon",
     "build": "rimraf ./dist && tsc",
     "test": "jest",

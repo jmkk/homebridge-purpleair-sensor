@@ -10,28 +10,41 @@ function parseRemotePurpleAirJson(data, averages?: string, conversion?: string) 
   const sensor_data = data.sensor;
   const sensor_stats = sensor_data.stats;
   const conv = conversion ?? 'None';
-  const pm25 = (() => {
-    switch (averages) {
-      case '10m': return sensor_stats['pm2.5_10minute'];
-      case '30m': return sensor_stats['pm2.5_30minute'];
-      case '60m': return sensor_stats['pm2.5_60minute'];
-      default: return parseFloat(sensor_data['pm2.5']);
-    }
-  })();
+  const pm25 = getPM25(sensor_data, sensor_stats, averages);
+  const pm25alt = parseFloat(sensor_data['pm2.5_alt']);
   const pm25Cf1 = parseFloat(sensor_data['pm2.5_cf_1']);
-  const humidity = parseFloat(sensor_data.humidity);
+  const humidity = parseFloat(sensor_data.humidity) + 4;
   const sensor = sensor_data.sensor_index;
   const voc = sensor_data.voc ? parseFloat(sensor_data.voc) : null;
-  return new SensorReading(sensor, pm25, pm25Cf1, humidity, voc, conv);
+  const temperature = convertTemperatureToCelcius(parseFloat(sensor_data.temperature));
+  return new SensorReading(sensor, pm25, pm25Cf1, humidity, temperature, voc, conv, pm25alt);
 }
 
 function parseLocalPurpleAirJson(data, averages?: string, conversion?: string) {
   const conv = conversion ?? 'None';
   const pm25 = parseFloat(data.pm2_5_atm);
+  const pm25alt = pm25; // local sensors don't have pm2.5_alt (yet?)
+  // TODO: calculate it https://github.com/jmkk/homebridge-purpleair-sensor/issues/58
   const pm25Cf1 = parseFloat(data.pm2_5_cf_1);
-  const humidity = parseFloat(data.current_humidity);
+  const humidity = parseFloat(data.current_humidity) + 4;
   const sensor = data.Id;
-  return new SensorReading(sensor, pm25, pm25Cf1, humidity, null, conv);
+  const temperature = convertTemperatureToCelcius(parseFloat(data.current_temp_f));
+  return new SensorReading(sensor, pm25, pm25Cf1, humidity, temperature, null, conv, pm25alt);
+}
+
+function getPM25(sensor_data, sensor_stats, averages) {
+  switch (averages) {
+    case '10m': return sensor_stats['pm2.5_10minute'];
+    case '30m': return sensor_stats['pm2.5_30minute'];
+    case '60m': return sensor_stats['pm2.5_60minute'];
+    default: return parseFloat(sensor_data['pm2.5']);
+  }
+}
+
+function convertTemperatureToCelcius(temperature: number): number {
+  // Correct temperature by 8 degrees F before conversion
+  // https://community.purpleair.com/t/purpleair-sensors-functional-overview/150
+  return Math.round(((temperature - 8) - 32) * 5 / 9);
 }
 
 export class SensorReading {
@@ -43,21 +56,26 @@ export class SensorReading {
    * @param pm25 sensor pm 2.5 value (PM2_5Value)
    * @param pm25Cf1 sensor pm 2.5 value from CF1 / standard particles (pm2_5_cf_1)
    * @param humidity sensor humidity value
+   * @param temperature sensor temperature value
    * @param voc sensor Voc value
    * @param conversion conversion ("None", "AQandU", "LRAPA", "EPA", or "WOODSMOKE"). Default to None.
+   * @param pm25alt sensor pm 2.5 value from alt (pm2_5_alt)
    */
   constructor(
       public readonly sensor: string,
       public readonly pm25: number,
       public readonly pm25Cf1: number,
       public readonly humidity: number,
+      public readonly temperature: number,
       public readonly voc: number | null,
-      public readonly conversion: string) {
+      public readonly conversion: string,
+      public readonly pm25alt: number) {
     this.updateTimeMs = Date.now();
   }
 
   public toString = () : string => {
-    return `SensorReading(AQI=${this.aqi.toFixed(0)}, PM25=${this.pm25}u/m3, PM25_CF1=${this.pm25Cf1}u/m3, Humidity=${this.humidity}, VOC=${this.voc})`;
+    // eslint-disable-next-line max-len
+    return `(AQI=${this.aqi.toFixed(0)}, PM25=${this.pm25}u/m3, PM25_CF1=${this.pm25Cf1}u/m3, Humidity=${this.humidity}, temperature=${this.temperature}, VOC=${this.voc}, PM25ALT=${this.pm25alt})`;
   };
 
   get aqi(): number {
@@ -73,6 +91,9 @@ export class SensorReading {
       }
       case 'WOODSMOKE': {
         return SensorReading.pmToWoodsmoke(this.pm25Cf1);
+      }
+      case 'ALT-CF3': {
+        return SensorReading.pmToAQI(this.pm25alt);
       }
       default: {
         return SensorReading.pmToAQI(this.pm25);

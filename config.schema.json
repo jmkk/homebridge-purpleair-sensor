@@ -1,52 +1,100 @@
 {
   "pluginAlias": "PurpleAirSensor",
-  "pluginType": "accessory",
-  "singular": false,
-  "headerDisplay": "Find the sensor ID by going to <a href='https://www.purpleair.com/map'>PurpleAir's map</a> -> click on a sensor, and look at the URL. It's the number right after 'select='.\nTo obtain the API read key, reach out to contact@purpleair.com. For private sensors, check the map's URL for the 'key=' string.",
+  "pluginType": "platform",
+  "singular": true,
+  "headerDisplay": "",
   "schema": {
     "type": "object",
     "properties": {
-      "name": {
-        "title": "Name",
-        "type": "string",
-        "required": true
-      },
-      "sensor": {
-        "title": "Sensor ID",
-        "type": "number",
-        "required": true
-      },
-      "localIPAddress": {
-        "title": "Local IP address of the sensor, if using it directly on the local network",
-        "type": "string",
-        "required": false
-      },
       "apiReadKey": {
-        "title": "API read key, required when local IP address above is not set",
+        "title": "PurpleAir API read key",
         "type": "string",
-        "required": false
+        "required": false,
+        "description": "Ńot needed when you want to access your private sensors over the local network. To obtain the API read key, reach out to contact@purpleair.com."
       },
-      "key": {
-        "title": "Key for private sensors",
-        "type": "string",
-        "required": false
+      "sensors": {
+        "type": "array",
+        "items": {
+          "type": "object",
+          "title": "Sensor",
+          "properties": {
+            "name": {
+              "title": "Name",
+              "type": "string",
+              "required": true,
+              "description": "This name will be used as the accessory name in HomeKit.",
+              "placeholder": "PurpleAir Mt. Hamilton"
+            },
+            "useLocalNetwork": {
+              "title": "Use sensor directly on the local network.",
+              "type": "boolean",
+              "default": false,
+              "description": "If checked, you must provide the local IP address of the sensor. Otherwise, PurpleAir public API will be used for which you must provide the API read key."
+            },
+            "sensor": {
+              "title": "Sensor ID",
+              "type": "number",
+              "required": false,
+              "description": "Required. Find the sensor ID by going to <a href='https://www.purpleair.com/map'>PurpleAir's map</a> -> click on a sensor, and look at the URL. It's the number right after 'select='.",
+              "condition": {
+                "functionBody": "return model.sensors[arrayIndices].useLocalNetwork === false;"
+              }
+            },
+            "localIPAddress": {
+              "title": "Sensor IP/hostname",
+              "type": "string",
+              "required": false,
+              "description": "Local IP/hostname address of the sensor",
+              "placeholder": "192.168.x.x",
+              "format": "hostname",
+              "condition": {
+                "functionBody": "return model.sensors[arrayIndices].useLocalNetwork === true;"
+              }
+            },
+            "key": {
+              "title": "Key for private sensors",
+              "type": "string",
+              "required": false,
+              "description": "Only needed for private sensors. Check the sensor map's URL for the 'key=' string. If you don't have a key, you can leave this field empty and the plugin will try to access the sensor as public. Note: this is different from the API read key.",
+              "condition": {
+                "functionBody": "return model.sensors[arrayIndices].useLocalNetwork === false;"
+              }
+            },
+            "humidity": {
+              "title": "Report humidity",
+              "type": "boolean",
+              "default": true,
+              "description": "If checked, the plugin will report humidity as a separate sensor in HomeKit."
+            },
+            "temperature": {
+              "title": "Report temperature",
+              "type": "boolean",
+              "default": true,
+              "description": "If checked, the plugin will report temperature as a separate sensor in HomeKit."
+            }
+          }
+        }
       },
       "conversion" : {
-        "title": "Conversions help accomodate different types of pollution with different particle densities",
+        "title": "Conversion",
         "type": "string",
         "require": false,
         "default": "None",
+        "description": "Conversions help accomodate different types of pollution with different particle densities. Note: for EPA you need to enable fetching humidity.",
         "oneOf": [
           { "title": "None", "enum": ["None"] },
           { "title": "EPA", "enum": ["EPA"] },
           { "title": "AQandU", "enum": ["AQandU"] },
           { "title": "LRAPA", "enum": ["LRAPA"] },
-          { "title": "WOODSMOKE", "enum": ["WOODSMOKE"] }
+          { "title": "WOODSMOKE", "enum": ["WOODSMOKE"] },
+          { "title": "ALT-CF3", "enum": ["ALT-CF3"] }
         ]
       },
       "averages": {
-        "title": "Reading Averages (default = realtime). Note that when using localIPAddress this config is ignored and always uses 2m average.",
+        "title": "Reading Averages",
         "type": "string",
+        "description": "Note that for sensors accessed via local network, this config is ignored and always uses 2m average.",
+        "default": "realtime",
         "oneOf": [
           { "title": "Show Realtime", "enum": ["realtime"] },
           { "title": "10 Minute Average", "enum": ["10m"] },
@@ -55,7 +103,7 @@
         ]
       },
       "aqiInsteadOfDensity": {
-        "title": "Report AQI number instead of density (ug/m^3). HomeKit only allows reporting PM2.5 density instead of AQI value, but some people (e.g. author of the plugin) likes to see AQI value instead. If checked, the plugin will use the density field to report the AQI value.",
+        "title": "Report AQI number instead of density (ug/m^3). HomeKit only allows reporting PM2.5 density instead of AQI value, but some prefer to see AQI value instead. If checked, the plugin will use the density field to report the AQI value.",
         "type": "boolean"
       },
       "verboseLogging": {
