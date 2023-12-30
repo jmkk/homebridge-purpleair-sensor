@@ -104,7 +104,7 @@ export class PurpleAirPlatformAccessory {
     this.platform.log.error(this.accessory.displayName + ': ' + message);
   }
 
-  async getAirQuality(): Promise<CharacteristicValue> {
+  getAirQuality() {
     this.debugLog('getAirQuality');
 
     const lastReading = this.accessory.context.lastReading;
@@ -115,7 +115,7 @@ export class PurpleAirPlatformAccessory {
     return this.platform.Characteristic.AirQuality.UNKNOWN;
   }
 
-  async getPM2_5Density(): Promise<CharacteristicValue> {
+  getPM2_5Density() {
     this.debugLog('getPM2_5Density');
 
     const lastReading = this.accessory.context.lastReading;
@@ -130,7 +130,7 @@ export class PurpleAirPlatformAccessory {
     return 0;
   }
 
-  async getVOCDensity(): Promise<CharacteristicValue> {
+  getVOCDensity() {
     this.debugLog('getVOCDensity');
 
     const lastReading = this.accessory.context.lastReading;
@@ -141,7 +141,7 @@ export class PurpleAirPlatformAccessory {
     return 0;
   }
 
-  async getCurrentRelativeHumidity(): Promise<CharacteristicValue> {
+  getCurrentRelativeHumidity() {
     this.debugLog('getCurrentRelativeHumidity');
 
     const lastReading = this.accessory.context.lastReading;
@@ -152,7 +152,7 @@ export class PurpleAirPlatformAccessory {
     return 0;
   }
 
-  async getCurrentTemperature(): Promise<CharacteristicValue> {
+  getCurrentTemperature() {
     this.debugLog('getCurrentTemperature');
 
     const lastReading = this.accessory.context.lastReading;
@@ -254,26 +254,19 @@ export class PurpleAirPlatformAccessory {
   /**
    * Handle the "GET" requests from HomeKit
    * These are sent when HomeKit wants to know the current state of the accessory, for example, checking if a Light bulb is on.
-   *
-   * GET requests should return as fast as possbile. A long delay here will result in
-   * HomeKit being unresponsive and a bad user experience in general.
-   *
-   * If your device takes time to respond you should update the status of your device
-   * asynchronously instead using the `updateCharacteristic` method instead.
-
-   * @example
-   * this.service.updateCharacteristic(this.platform.Characteristic.On, true)
    */
-  async getStatusActive(): Promise<CharacteristicValue> {
+  getStatusActive() {
     let activeResult = false;
 
     if (this.accessory.context.lastReading) {
-      const active = this.accessory.context.lastReading.updateTimeMs > Date.now() - MIN_UPDATE_INTERVAL_SECS * 1000;
-      if (active) {
+      const lastUpdateDeltaMs = Date.now() - this.accessory.context.lastReading.updateTimeMs;
+      const updatesHappening = lastUpdateDeltaMs <= DEFAULT_UPDATE_INTERVAL_SECS * 1000;
+      if (updatesHappening) {
         activeResult = true;
       } else {
-        const serviceError = this.accessory.context.lastReading.updateTimeMs > Date.now() - SENSOR_FAILURE_TIMEOUT_SECS * 1000;
+        const serviceError = lastUpdateDeltaMs > SENSOR_FAILURE_TIMEOUT_SECS * 1000;
         if (serviceError) {
+          this.errorLog(`getStatusActive throwing SERVICE_COMMUNICATION_FAILURE because last update was ${lastUpdateDeltaMs/1000}s ago`);
           throw new this.platform.api.hap.HapStatusError(this.platform.api.hap.HAPStatus.SERVICE_COMMUNICATION_FAILURE);
         }
       }
@@ -287,6 +280,8 @@ export class PurpleAirPlatformAccessory {
     const lastReading = this.accessory.context.lastReading;
     this.debugLog(`Updating HomeKit with new sensor reading: ${lastReading}`);
     if (lastReading !== undefined) {
+      this.service.updateCharacteristic(this.platform.Characteristic.StatusActive, true);
+
       this.service.updateCharacteristic(this.platform.Characteristic.AirQuality, lastReading.airQualityHomekitReading);
 
       if (aqiInsteadOfDensity) {
@@ -301,6 +296,7 @@ export class PurpleAirPlatformAccessory {
 
       if (lastReading.humidity) {
         if (this.humidity) {
+          this.humidity.updateCharacteristic(this.platform.Characteristic.StatusActive, true);
           this.humidity.updateCharacteristic(this.platform.Characteristic.CurrentRelativeHumidity, lastReading.humidity);
         }
 
@@ -309,6 +305,7 @@ export class PurpleAirPlatformAccessory {
       }
 
       if (this.temperature && lastReading.temperature) {
+        this.temperature.updateCharacteristic(this.platform.Characteristic.StatusActive, true);
         this.temperature.updateCharacteristic(this.platform.Characteristic.CurrentTemperature, lastReading.temperature);
       }
     }
