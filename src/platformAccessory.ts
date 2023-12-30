@@ -1,4 +1,4 @@
-import { Service, PlatformAccessory, CharacteristicValue } from 'homebridge';
+import { Service, PlatformAccessory } from 'homebridge';
 import axios, { AxiosError } from 'axios';
 import { PurpleAirPlatform } from './platform';
 import { DEFAULT_UPDATE_INTERVAL_SECS, PURPLEAIR_API_BASE_URL, MIN_UPDATE_INTERVAL_SECS, SENSOR_FAILURE_TIMEOUT_SECS } from './settings';
