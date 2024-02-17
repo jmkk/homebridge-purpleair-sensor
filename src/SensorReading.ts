@@ -29,7 +29,8 @@ function parseLocalPurpleAirJson(data, averages?: string, conversion?: string) {
   const humidity = parseFloat(data.current_humidity) + 4;
   const sensor = data.Id;
   const temperature = convertTemperatureToCelcius(parseFloat(data.current_temp_f));
-  return new SensorReading(sensor, pm25, pm25Cf1, humidity, temperature, null, conv, pm25alt);
+  const voc = data.gas_680 ? parseFloat(data.gas_680) : null;
+  return new SensorReading(sensor, pm25, pm25Cf1, humidity, temperature, voc, conv, pm25alt);
 }
 
 function getPM25(sensor_data, sensor_stats, averages) {

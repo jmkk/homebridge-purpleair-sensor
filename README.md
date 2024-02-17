@@ -58,6 +58,7 @@ sudo npm publish
 
 
 # Changelog
+- 3.0.1: Fixed fetching VOC for local sensors
 - 3.0.0: Major rewwrite to convert to the Platform plugin. Added humidity and temperatures reporting. Added ALT-CF3 conversion.
 - 2.1.0: Only fetch API fields needed for the core functionality of the plugin.
 - 2.0.2: Verbose network error logging.
