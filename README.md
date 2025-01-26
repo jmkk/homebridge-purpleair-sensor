@@ -58,6 +58,7 @@ sudo npm publish
 
 
 # Changelog
+- 3.1.0: Refreshed dependencies and verified Homebridge v2 compatibility
 - 3.0.2: Fixed stale accessory data when restored from cache
 - 3.0.1: Fixed fetching VOC for local sensors
 - 3.0.0: Major rewwrite to convert to the Platform plugin. Added humidity and temperatures reporting. Added ALT-CF3 conversion.
