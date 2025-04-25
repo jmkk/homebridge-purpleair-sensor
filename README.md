@@ -58,6 +58,7 @@ sudo npm publish
 
 
 # Changelog
+- 3.1.1: Fixed double "None" conversion config, refreshed dependencies
 - 3.1.0: Refreshed dependencies and verified Homebridge v2 compatibility
 - 3.0.2: Fixed stale accessory data when restored from cache
 - 3.0.1: Fixed fetching VOC for local sensors

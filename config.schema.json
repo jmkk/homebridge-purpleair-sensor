@@ -78,7 +78,7 @@
       "conversion" : {
         "title": "Conversion",
         "type": "string",
-        "require": false,
+        "required": true,
         "default": "None",
         "description": "Conversions help accomodate different types of pollution with different particle densities. Note: for EPA you need to enable fetching humidity.",
         "oneOf": [
@@ -94,6 +94,7 @@
         "title": "Reading Averages",
         "type": "string",
         "description": "Note that for sensors accessed via local network, this config is ignored and always uses 2m average.",
+        "required": true,
         "default": "realtime",
         "oneOf": [
           { "title": "Show Realtime", "enum": ["realtime"] },
