@@ -13,7 +13,7 @@
     "url": "https://github.com/jmkk/homebridge-purpleair-sensor/issues"
   },
   "engines": {
-    "node": "^18 || ^20 || ^22",
+    "node": "^18 || ^20 || ^22 || ^24",
     "homebridge": "^1.6.0 || ^1.8.5 || ^2.0.0 || ^2.0.0-beta.23 || ^2.0.0-alpha.37"
   },
   "main": "dist/main.js",
