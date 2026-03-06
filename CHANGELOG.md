@@ -6,8 +6,9 @@
 - Refreshed dependencies.
 
 ## [3.2.1]
-### Refreshed dependencies.
-### Node.js 24 support
+### Changed
+- Refreshed dependencies.
+- Node.js 24 support
 
 ## [3.1.1]
 ### Fixed
