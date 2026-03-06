@@ -15,7 +15,7 @@ but with a few changes:
 2. Support private sensors.
 3. Support VOC sensor reading.
 4. Support different averages, from realtime data, all the way to 1 hour average.
-5. Sensor data gets refreshed every 5 minutes.
+5. Sensor data refresh interval is configurable (default 5 minutes).
 6. Allow reporting AQI value instead of PM2.5 density in HomeKit. The author is more used to reading AQI value,
    but HomeKit has only a field for PM2.5 density value. The plugin allows you to configure displaying AQI value
    in the density field.

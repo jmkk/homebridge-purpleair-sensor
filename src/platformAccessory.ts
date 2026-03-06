@@ -13,6 +13,7 @@ export class PurpleAirPlatformAccessory {
   private service: Service;
   private humidity?: Service;
   private temperature?: Service;
+  private readonly updateIntervalSecs: number;
 
   constructor(
     private readonly platform: PurpleAirPlatform,
@@ -83,8 +84,10 @@ export class PurpleAirPlatformAccessory {
       }
     }
 
-    const interval = DEFAULT_UPDATE_INTERVAL_SECS * 1000;
-    this.infoLog('Scheduling updates every ' + interval/1000/60 + ' minutes');
+    this.updateIntervalSecs = this.resolveUpdateIntervalSecs();
+    const interval = this.updateIntervalSecs * 1000;
+    const intervalMins = Number((this.updateIntervalSecs / 60).toFixed(2));
+    this.infoLog(`Scheduling updates every ${intervalMins} minutes`);
     setInterval(() => {
       this.update();
     }, interval);
@@ -102,6 +105,29 @@ export class PurpleAirPlatformAccessory {
 
   errorLog(message: string) {
     this.platform.log.error(this.accessory.displayName + ': ' + message);
+  }
+
+  resolveUpdateIntervalSecs() {
+    const configuredInterval = this.platform.config.updateIntervalSecs;
+    if (configuredInterval !== undefined) {
+      const intervalSeconds = Number(configuredInterval);
+      if (Number.isFinite(intervalSeconds)) {
+        if (intervalSeconds < MIN_UPDATE_INTERVAL_SECS) {
+          this.errorLog(
+            `Configured updateIntervalSecs ${intervalSeconds} is below minimum ${MIN_UPDATE_INTERVAL_SECS}; using minimum`,
+          );
+          return MIN_UPDATE_INTERVAL_SECS;
+        }
+
+        return intervalSeconds;
+      }
+
+      this.errorLog(
+        `Configured updateIntervalSecs ${configuredInterval} is invalid; using default ${DEFAULT_UPDATE_INTERVAL_SECS}`,
+      );
+    }
+
+    return DEFAULT_UPDATE_INTERVAL_SECS;
   }
 
   getAirQuality() {
@@ -260,7 +286,7 @@ export class PurpleAirPlatformAccessory {
 
     if (this.accessory.context.lastReading) {
       const lastUpdateDeltaMs = Date.now() - this.accessory.context.lastReading.updateTimeMs;
-      const updatesHappening = lastUpdateDeltaMs <= DEFAULT_UPDATE_INTERVAL_SECS * 1000;
+      const updatesHappening = lastUpdateDeltaMs <= this.updateIntervalSecs * 1000;
       if (updatesHappening) {
         activeResult = true;
       } else {
