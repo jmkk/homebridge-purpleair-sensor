@@ -56,22 +56,3 @@ npm login
 sudo npm publish
 ```
 
-
-# Changelog
-- 3.1.1: Fixed double "None" conversion config, refreshed dependencies
-- 3.1.0: Refreshed dependencies and verified Homebridge v2 compatibility
-- 3.0.2: Fixed stale accessory data when restored from cache
-- 3.0.1: Fixed fetching VOC for local sensors
-- 3.0.0: Major rewwrite to convert to the Platform plugin. Added humidity and temperatures reporting. Added ALT-CF3 conversion.
-- 2.1.0: Only fetch API fields needed for the core functionality of the plugin.
-- 2.0.2: Verbose network error logging.
-- 2.0.1: Refreshing dependencies, now requiring node >= 14.8.1
-- 2.0.0: Use the new PurpleAir.com API for remote sensors. Note: you need to get your read API key from PurpleAir to use the new API, or you can choose to use local sensors without the API key.
-- 1.7.0: Support for direct access to local sensors
-- 1.6.2: Support EPA conversion.
-- 1.5.0: Support private sensors.
-- 1.4.0: Add AQandU and LRAPA conversions.
-- 1.3.0: Added unit tests for parsing and ability to report averages in addition to realtime values.
-- 1.2.0: Verbose logging option.
-- 1.1.0: Allow reporting AQI value in the field for PM2.5 density. I personally like the AQI value because I'm more used to it, but technically HomeKit only supports PM2.5 density rather than AQI.
-- 1.0.0: Initial version.
